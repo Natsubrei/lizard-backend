@@ -12,3 +12,8 @@ server:
   port: 8080
   servlet:
     context-path: /api
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true

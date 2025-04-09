@@ -1,11 +1,14 @@
 package com.lizard.lizardbackend.result;
 
+import lombok.Data;
+
 import java.io.Serializable;
 
 /**
  * 后端统一返回结果
  * @param <T> 数据类型
  */
+@Data
 public class Result<T> implements Serializable {
     /**
      * 编码，1-成功，0-失败
