@@ -1,13 +1,17 @@
 package com.lizard.lizardbackend.controller.user;
 
+import com.lizard.lizardbackend.constant.UserConstant;
 import com.lizard.lizardbackend.pojo.dto.UserLoginDTO;
 import com.lizard.lizardbackend.pojo.dto.UserRegisterDTO;
+import com.lizard.lizardbackend.pojo.entity.User;
+import com.lizard.lizardbackend.pojo.vo.UserVO;
 import com.lizard.lizardbackend.result.Result;
 import com.lizard.lizardbackend.service.UserService;
 import com.lizard.lizardbackend.utils.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -19,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
-    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
@@ -62,5 +65,24 @@ public class UserController {
         response.addHeader("token", token);
 
         return Result.success(userId);
+    }
+
+    /**
+     * 查询当前登录用户信息
+     * @param request http请求
+     * @return 脱敏后的用户信息
+     */
+    @GetMapping("/current")
+    public Result<UserVO> current(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
+
+        User user = userService.getById(userId);
+        log.info("当前用户为：{}", user.getUsername());
+
+        // 用户信息脱敏
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(user, userVO);
+
+        return Result.success(userVO);
     }
 }

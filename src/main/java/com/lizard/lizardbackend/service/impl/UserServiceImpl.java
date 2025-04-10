@@ -9,6 +9,7 @@ import com.lizard.lizardbackend.pojo.entity.User;
 import com.lizard.lizardbackend.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
@@ -17,7 +18,7 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 @Service
 public class UserServiceImpl implements UserService {
-    private UserMapper userMapper;
+    private final UserMapper userMapper;
 
     public UserServiceImpl(UserMapper userMapper) {
         this.userMapper = userMapper;
@@ -109,5 +110,21 @@ public class UserServiceImpl implements UserService {
         }
 
         return user.getId();
+    }
+
+    /**
+     * 根据id查询用户
+     * @param userId 用户id
+     * @return 用户信息
+     */
+    @Override
+    public User getById(Long userId) {
+        // 检查id是否为空
+        if (userId == null) {
+            return null;
+        }
+
+        // 查询用户并返回结果
+        return userMapper.getById(userId);
     }
 }
