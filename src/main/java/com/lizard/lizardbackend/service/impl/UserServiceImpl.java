@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
      * @return 用户id
      */
     @Override
-    public User login(String username, String password) {
+    public Long login(String username, String password) {
         // 检查各字段是否为空
         if (StringUtils.isAnyBlank(username, password)) {
             throw new LoginFailException(MessageConstant.USER_OR_PASSWORD_IS_NULL);
@@ -108,6 +108,6 @@ public class UserServiceImpl implements UserService {
             throw new LoginFailException(MessageConstant.USERNAME_OR_PASSWORD_ERROR);
         }
 
-        return user;
+        return user.getId();
     }
 }

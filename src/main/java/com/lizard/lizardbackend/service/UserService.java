@@ -16,7 +16,7 @@ public interface UserService {
      * 用户登录
      * @param username 用户名
      * @param password 密码
-     * @return 用户信息
+     * @return 用户id
      */
-    User login(String username, String password);
+    Long login(String username, String password);
 }

@@ -2,19 +2,13 @@ package com.lizard.lizardbackend.controller.user;
 
 import com.lizard.lizardbackend.pojo.dto.UserLoginDTO;
 import com.lizard.lizardbackend.pojo.dto.UserRegisterDTO;
-import com.lizard.lizardbackend.pojo.entity.User;
-import com.lizard.lizardbackend.pojo.vo.UserLoginVO;
 import com.lizard.lizardbackend.result.Result;
 import com.lizard.lizardbackend.service.UserService;
 import com.lizard.lizardbackend.utils.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 用户相关接口
@@ -52,25 +46,21 @@ public class UserController {
     /**
      * 用户登录
      * @param userLoginDTO 用户登录DTO
-     * @return 用户登录VO
+     * @return 用户id
      */
     @PostMapping("/login")
-    public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO, HttpServletResponse response) {
+    public Result<Long> login(@RequestBody UserLoginDTO userLoginDTO, HttpServletResponse response) {
         log.info("用户登录：{}", userLoginDTO);
 
         String username = userLoginDTO.getUsername();
         String password = userLoginDTO.getPassword();
 
-        User user = userService.login(username, password);
+        Long userId = userService.login(username, password);
 
         // 登录成功则生成JWT字符串，并将其添加至响应头部返回给前端
-        String token = JwtUtil.createToken(user.getId().toString());
+        String token = JwtUtil.createToken(userId.toString());
         response.addHeader("token", token);
 
-        // 用户信息脱敏
-        UserLoginVO userLoginVO = new UserLoginVO();
-        BeanUtils.copyProperties(user, userLoginVO);
-
-        return Result.success(userLoginVO);
+        return Result.success(userId);
     }
 }
