@@ -13,4 +13,9 @@ public interface UserConstant {
      * 密码格式，8~32位字母数字下划线
      */
     String PASSWORD_PATTERN = "^\\S{8,32}$";
+
+    /**
+     * 用户id常量
+     */
+    String USER_ID = "USER_ID";
 }

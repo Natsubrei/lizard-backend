@@ -2,6 +2,7 @@ package com.lizard.lizardbackend.service.impl;
 
 import com.lizard.lizardbackend.constant.MessageConstant;
 import com.lizard.lizardbackend.constant.UserConstant;
+import com.lizard.lizardbackend.exception.LoginFailException;
 import com.lizard.lizardbackend.exception.RegisterFailException;
 import com.lizard.lizardbackend.mapper.UserMapper;
 import com.lizard.lizardbackend.pojo.entity.User;
@@ -51,7 +52,7 @@ public class UserServiceImpl implements UserService {
             throw new RegisterFailException(MessageConstant.PASSWORD_FORMAT_ERROR);
         }
 
-        // 检查用户是否已存在
+        // 检查用户是否存在
         User user = userMapper.getByUsername(username);
         if (user != null) {
             throw new RegisterFailException(MessageConstant.USERNAME_EXISTS);
@@ -70,5 +71,43 @@ public class UserServiceImpl implements UserService {
 
         // 返回新用户的id
         return newUser.getId();
+    }
+
+    /**
+     * 用户登录
+     * @param username 用户名
+     * @param password 密码
+     * @return 用户id
+     */
+    @Override
+    public User login(String username, String password) {
+        // 检查各字段是否为空
+        if (StringUtils.isAnyBlank(username, password)) {
+            throw new LoginFailException(MessageConstant.USER_OR_PASSWORD_IS_NULL);
+        }
+
+        // 检查用户名格式是否正确
+        if (!username.matches(UserConstant.USERNAME_PATTERN)) {
+            throw new LoginFailException(MessageConstant.USERNAME_FORMAT_ERROR);
+        }
+
+        // 检查密码格式是否正确
+        if (!password.matches(UserConstant.PASSWORD_PATTERN)) {
+            throw new LoginFailException(MessageConstant.PASSWORD_FORMAT_ERROR);
+        }
+
+        // 检查用户是否存在
+        User user = userMapper.getByUsername(username);
+        if (user == null) {
+            throw new LoginFailException(MessageConstant.USERNAME_OR_PASSWORD_ERROR);
+        }
+
+        // 检查密码是否正确
+        String encryptPwd = DigestUtils.md5DigestAsHex((password + username).getBytes(StandardCharsets.UTF_8));
+        if (!encryptPwd.equals(user.getPassword())) {
+            throw new LoginFailException(MessageConstant.USERNAME_OR_PASSWORD_ERROR);
+        }
+
+        return user;
     }
 }

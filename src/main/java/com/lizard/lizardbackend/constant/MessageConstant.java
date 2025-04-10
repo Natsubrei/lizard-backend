@@ -9,5 +9,5 @@ public interface MessageConstant {
     String USERNAME_FORMAT_ERROR = "用户名格式错误";
     String PASSWORD_FORMAT_ERROR = "密码格式错误";
     String USERNAME_EXISTS = "用户名已存在";
-
+    String USERNAME_OR_PASSWORD_ERROR = "用户名或密码错误";
 }
