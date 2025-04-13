@@ -15,6 +15,11 @@ public interface UserConstant {
     String PASSWORD_PATTERN = "^\\S{8,32}$";
 
     /**
+     * 默认昵称前缀
+     */
+    String DEFAULT_NICKNAME_PREFIX = "西易用户_";
+
+    /**
      * 用户id常量
      */
     String USER_ID = "USER_ID";

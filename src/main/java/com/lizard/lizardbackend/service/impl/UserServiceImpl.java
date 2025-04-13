@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -62,10 +63,14 @@ public class UserServiceImpl implements UserService {
         // 对密码进行加密，用户名作为Salt，防止密码重复导致加密密码一致
         String encryptPwd = DigestUtils.md5DigestAsHex((password + username).getBytes(StandardCharsets.UTF_8));
 
+        // 生成默认昵称
+        String nickname = UserConstant.DEFAULT_NICKNAME_PREFIX + UUID.randomUUID().toString().substring(0, 6);
+
         // 创建新用户
         User newUser = new User();
         newUser.setUsername(username);
         newUser.setPassword(encryptPwd);
+        newUser.setNickname(nickname);
 
         // 将新用户信息存入数据库
         userMapper.insert(newUser);
