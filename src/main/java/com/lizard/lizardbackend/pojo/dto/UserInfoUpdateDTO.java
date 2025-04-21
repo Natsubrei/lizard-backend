@@ -9,7 +9,7 @@ import java.io.Serializable;
  * 用户修改个人信息DTO
  */
 @Data
-public class UserUpdateDTO implements Serializable {
+public class UserInfoUpdateDTO implements Serializable {
     /**
      * 用户昵称
      */

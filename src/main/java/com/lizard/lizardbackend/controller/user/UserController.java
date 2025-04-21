@@ -3,7 +3,7 @@ package com.lizard.lizardbackend.controller.user;
 import com.lizard.lizardbackend.constant.UserConstant;
 import com.lizard.lizardbackend.pojo.dto.UserLoginDTO;
 import com.lizard.lizardbackend.pojo.dto.UserRegisterDTO;
-import com.lizard.lizardbackend.pojo.dto.UserUpdateDTO;
+import com.lizard.lizardbackend.pojo.dto.UserInfoUpdateDTO;
 import com.lizard.lizardbackend.pojo.entity.User;
 import com.lizard.lizardbackend.pojo.vo.UserVO;
 import com.lizard.lizardbackend.result.Result;
@@ -89,12 +89,12 @@ public class UserController {
 
     /**
      * 修改用户信息
-     * @param userUpdateDTO 用户更新DTO
+     * @param userUpdateDTO 用户信息更新DTO
      * @param request http请求
      * @return 修改成功则返回成功Result
      */
     @PutMapping("/info")
-    public Result<?> updateInfo(@ModelAttribute UserUpdateDTO userUpdateDTO, HttpServletRequest request) {
+    public Result<?> updateInfo(@ModelAttribute UserInfoUpdateDTO userUpdateDTO, HttpServletRequest request) {
         Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
         String nickname = userUpdateDTO.getNickname();
         String phone = userUpdateDTO.getPhone();
