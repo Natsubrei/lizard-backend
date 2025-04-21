@@ -3,6 +3,8 @@ package com.lizard.lizardbackend.utils;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.lizard.lizardbackend.constant.MessageConstant;
+import com.lizard.lizardbackend.exception.UtilRuntimeException;
 
 import java.util.Date;
 
@@ -48,9 +50,9 @@ public class JwtUtil {
                     .verify(token)
                     .getSubject();
         } catch (JWTVerificationException e) {
-            throw new RuntimeException("登录已过期，请重新登录",e);
+            throw new UtilRuntimeException(MessageConstant.LOGIN_EXPIRED);
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Token验证失败", e);
+            throw new UtilRuntimeException(MessageConstant.TOKEN_VERIFICATION_FAILED);
         }
     }
 }

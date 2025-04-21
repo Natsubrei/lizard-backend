@@ -8,6 +8,14 @@ public interface MessageConstant {
     String PASSWORDS_NOT_CONSISTENT = "两次密码输入不一致";
     String USERNAME_FORMAT_ERROR = "用户名格式错误";
     String PASSWORD_FORMAT_ERROR = "密码格式错误";
+    String NICKNAME_FORMAT_ERROR = "昵称格式错误";
+    String PHONE_FORMAT_ERROR = "手机号格式错误";
     String USERNAME_EXISTS = "用户名已存在";
     String USERNAME_OR_PASSWORD_ERROR = "用户名或密码错误";
+    String FILE_PROCESS_ERROR = "文件处理异常";
+
+    String LOGIN_EXPIRED = "登录已过期，请重新登录";
+    String TOKEN_VERIFICATION_FAILED = "Token验证失败";
+
+    String FILE_UPLOAD_FAILED = "文件上传失败";
 }

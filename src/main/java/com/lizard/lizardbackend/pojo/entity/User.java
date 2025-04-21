@@ -1,5 +1,6 @@
 package com.lizard.lizardbackend.pojo.entity;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
  * 用户实体类
  */
 @Data
+@Builder
 public class User implements Serializable {
     /**
      * 用户id

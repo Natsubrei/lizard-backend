@@ -1,6 +1,7 @@
 package com.lizard.lizardbackend.service;
 
 import com.lizard.lizardbackend.pojo.entity.User;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
     /**
@@ -26,4 +27,13 @@ public interface UserService {
      * @return 用户信息
      */
     User getById(Long userId);
+
+    /**
+     * 修改用户信息
+     * @param userId 用户id
+     * @param nickname 用户昵称
+     * @param phone 用户手机号
+     * @param file 用户头像文件
+     */
+    void updateInfo(Long userId, String nickname, String phone, MultipartFile file);
 }

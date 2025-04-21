@@ -6,4 +6,32 @@
         INSERT INTO user (username, password, nickname)
         VALUES (#{username}, #{password}, #{nickname})
     </insert>
+
+    <update id="update" parameterType="User">
+        UPDATE user
+        <set>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            <if test="nickname != null">
+                nickname = #{nickname},
+            </if>
+            <if test="avatar != null">
+                avatar = #{avatar},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="role != null">
+                role = #{role},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="isDeleted != null">
+                is_deleted = #{isDeleted}
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
 </mapper>

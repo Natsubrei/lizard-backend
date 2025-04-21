@@ -1,3 +1,8 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
 spring:
   application:
     name: lizard-backend
@@ -5,15 +10,18 @@ spring:
     active: dev
   datasource:
     driver-class-name: ${spring.datasource.driver-class-name}
+    url: ${spring.datasource.url}
     username: ${spring.datasource.username}
     password: ${spring.datasource.password}
-    url: ${spring.datasource.url}
-server:
-  port: 8080
-  servlet:
-    context-path: /api
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.lizard.lizardbackend.pojo.entity
   configuration:
     map-underscore-to-camel-case: true
+
+ali-oss:
+  endpoint: ${ali-oss.endpoint}
+  bucket-name: ${ali-oss.bucket-name}
+  access-key-id: ${ali-oss.access-key-id}
+  access-key-secret: ${ali-oss.access-key-secret}

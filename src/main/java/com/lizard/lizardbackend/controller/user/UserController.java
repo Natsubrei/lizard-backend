@@ -3,6 +3,7 @@ package com.lizard.lizardbackend.controller.user;
 import com.lizard.lizardbackend.constant.UserConstant;
 import com.lizard.lizardbackend.pojo.dto.UserLoginDTO;
 import com.lizard.lizardbackend.pojo.dto.UserRegisterDTO;
+import com.lizard.lizardbackend.pojo.dto.UserUpdateDTO;
 import com.lizard.lizardbackend.pojo.entity.User;
 import com.lizard.lizardbackend.pojo.vo.UserVO;
 import com.lizard.lizardbackend.result.Result;
@@ -13,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 用户相关接口
@@ -75,7 +77,6 @@ public class UserController {
     @GetMapping("/current")
     public Result<UserVO> current(HttpServletRequest request) {
         Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
-
         User user = userService.getById(userId);
         log.info("当前用户为：{}", user.getUsername());
 
@@ -84,5 +85,24 @@ public class UserController {
         BeanUtils.copyProperties(user, userVO);
 
         return Result.success(userVO);
+    }
+
+    /**
+     * 修改用户信息
+     * @param userUpdateDTO 用户更新DTO
+     * @param request http请求
+     * @return 修改成功则返回成功Result
+     */
+    @PutMapping("/info")
+    public Result<?> updateInfo(@ModelAttribute UserUpdateDTO userUpdateDTO, HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
+        String nickname = userUpdateDTO.getNickname();
+        String phone = userUpdateDTO.getPhone();
+        MultipartFile file = userUpdateDTO.getFile();
+
+        log.info("用户信息更新：{}，{}，{}，{}", userId, nickname, phone, file.getName());
+        userService.updateInfo(userId, nickname, phone, file);
+
+        return Result.success();
     }
 }

@@ -13,4 +13,6 @@ public interface UserMapper {
 
     @Select("SELECT * FROM user WHERE id = #{userId}")
     User getById(Long userId);
+
+    void update(User user);
 }

@@ -4,15 +4,18 @@ import com.lizard.lizardbackend.constant.MessageConstant;
 import com.lizard.lizardbackend.constant.UserConstant;
 import com.lizard.lizardbackend.exception.LoginFailException;
 import com.lizard.lizardbackend.exception.RegisterFailException;
+import com.lizard.lizardbackend.exception.UpdateFailException;
 import com.lizard.lizardbackend.mapper.UserMapper;
 import com.lizard.lizardbackend.pojo.entity.User;
 import com.lizard.lizardbackend.service.UserService;
+import com.lizard.lizardbackend.utils.AliOssUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
@@ -25,13 +28,6 @@ public class UserServiceImpl implements UserService {
         this.userMapper = userMapper;
     }
 
-    /**
-     * 用户注册
-     * @param username 用户名
-     * @param password 密码
-     * @param confirmPassword 确认密码
-     * @return 注册成功则返回用户id，注册失败则返回null
-     */
     @Override
     public Long register(String username, String password, String confirmPassword) {
         // 检查各字段是否为空
@@ -67,10 +63,11 @@ public class UserServiceImpl implements UserService {
         String nickname = UserConstant.DEFAULT_NICKNAME_PREFIX + UUID.randomUUID().toString().substring(0, 6);
 
         // 创建新用户
-        User newUser = new User();
-        newUser.setUsername(username);
-        newUser.setPassword(encryptPwd);
-        newUser.setNickname(nickname);
+        User newUser = User.builder()
+                .username(username)
+                .password(encryptPwd)
+                .nickname(nickname)
+                .build();
 
         // 将新用户信息存入数据库
         userMapper.insert(newUser);
@@ -79,12 +76,6 @@ public class UserServiceImpl implements UserService {
         return newUser.getId();
     }
 
-    /**
-     * 用户登录
-     * @param username 用户名
-     * @param password 密码
-     * @return 用户id
-     */
     @Override
     public Long login(String username, String password) {
         // 检查各字段是否为空
@@ -117,11 +108,6 @@ public class UserServiceImpl implements UserService {
         return user.getId();
     }
 
-    /**
-     * 根据id查询用户
-     * @param userId 用户id
-     * @return 用户信息
-     */
     @Override
     public User getById(Long userId) {
         // 检查id是否为空
@@ -131,5 +117,43 @@ public class UserServiceImpl implements UserService {
 
         // 查询用户并返回结果
         return userMapper.getById(userId);
+    }
+
+    @Override
+    public void updateInfo(Long userId, String nickname, String phone, MultipartFile file) {
+        // 检查各个字符是否为空
+        if (StringUtils.isAllBlank(nickname, phone) && file.isEmpty()) {
+            // 若全为空则之间返回
+            return;
+        }
+
+        // 检查昵称格式
+        if (StringUtils.isNotBlank(nickname) && !nickname.matches(UserConstant.NICKNAME_PATTERN)) {
+            throw new UpdateFailException(MessageConstant.NICKNAME_FORMAT_ERROR);
+        }
+
+        // 检查手机号格式
+        if (StringUtils.isNotBlank(phone) && !phone.matches(UserConstant.PHONE_PATTERN)) {
+            throw new UpdateFailException(MessageConstant.PHONE_FORMAT_ERROR);
+        }
+
+        String avatar = null;
+        if (!file.isEmpty()) {
+            try {
+                // 文件不为空则尝试上传到OSS
+                avatar = AliOssUtil.upload(file.getBytes(), file.getOriginalFilename(), UserConstant.AVATAR_DIRECTORY);
+            } catch (IOException e) {
+                throw new UpdateFailException(MessageConstant.FILE_PROCESS_ERROR);
+            }
+        }
+
+        User user = User.builder()
+                .id(userId)
+                .nickname(nickname)
+                .phone(phone)
+                .avatar(avatar)
+                .build();
+
+        userMapper.update(user);
     }
 }
