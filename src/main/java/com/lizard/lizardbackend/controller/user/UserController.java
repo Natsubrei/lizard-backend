@@ -2,6 +2,7 @@ package com.lizard.lizardbackend.controller.user;
 
 import com.lizard.lizardbackend.constant.UserConstant;
 import com.lizard.lizardbackend.pojo.dto.UserLoginDTO;
+import com.lizard.lizardbackend.pojo.dto.UserPwdUpdateDTO;
 import com.lizard.lizardbackend.pojo.dto.UserRegisterDTO;
 import com.lizard.lizardbackend.pojo.dto.UserInfoUpdateDTO;
 import com.lizard.lizardbackend.pojo.entity.User;
@@ -77,6 +78,7 @@ public class UserController {
     @GetMapping("/current")
     public Result<UserVO> current(HttpServletRequest request) {
         Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
+
         User user = userService.getById(userId);
         log.info("当前用户为：{}", user.getUsername());
 
@@ -96,12 +98,33 @@ public class UserController {
     @PutMapping("/info")
     public Result<?> updateInfo(@ModelAttribute UserInfoUpdateDTO userUpdateDTO, HttpServletRequest request) {
         Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
+
         String nickname = userUpdateDTO.getNickname();
         String phone = userUpdateDTO.getPhone();
         MultipartFile file = userUpdateDTO.getFile();
 
         log.info("用户信息更新：{}，{}，{}，{}", userId, nickname, phone, file.getName());
         userService.updateInfo(userId, nickname, phone, file);
+
+        return Result.success();
+    }
+
+    /**
+     * 修改用户密码
+     * @param userPwdUpdateDTO 用户密码更新DTO
+     * @param request http请求
+     * @return 修改成功则返回成功Result
+     */
+    @PutMapping("/password")
+    public Result<?> updatePassword(@RequestBody UserPwdUpdateDTO userPwdUpdateDTO, HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
+
+        String oldPassword = userPwdUpdateDTO.getOldPassword();
+        String newPassword = userPwdUpdateDTO.getNewPassword();
+        String confirmNewPassword = userPwdUpdateDTO.getConfirmNewPassword();
+
+        log.info("用户修改密码：{}，{}", userId, userPwdUpdateDTO);
+        userService.updatePassword(userId, oldPassword, newPassword, confirmNewPassword);
 
         return Result.success();
     }

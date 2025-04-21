@@ -110,18 +110,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getById(Long userId) {
-        // 检查id是否为空
-        if (userId == null) {
-            return null;
-        }
-
         // 查询用户并返回结果
         return userMapper.getById(userId);
     }
 
     @Override
     public void updateInfo(Long userId, String nickname, String phone, MultipartFile file) {
-        // 检查各个字符是否为空
+        // 检查各字符是否为空
         if (StringUtils.isAllBlank(nickname, phone) && file.isEmpty()) {
             // 若全为空则之间返回
             return;
@@ -152,6 +147,54 @@ public class UserServiceImpl implements UserService {
                 .nickname(nickname)
                 .phone(phone)
                 .avatar(avatar)
+                .build();
+
+        userMapper.update(user);
+    }
+
+    @Override
+    public void updatePassword(Long userId, String oldPassword, String newPassword, String confirmNewPassword) {
+        // 检查各字段是否为空
+        if (StringUtils.isAnyBlank(oldPassword, newPassword, confirmNewPassword)) {
+            throw new UpdateFailException(MessageConstant.ALL_FIELDS_REQUIRED);
+        }
+
+        // 检查新密码与旧密码是否一致
+        if (newPassword.equals(oldPassword)) {
+            throw new UpdateFailException(MessageConstant.PASSWORD_DUPLICATION_NOT_ALLOWED);
+        }
+
+        // 检查两次输入的新密码是否一致
+        if (!confirmNewPassword.equals(newPassword)) {
+            throw new UpdateFailException(MessageConstant.NEW_PASSWORDS_NOT_CONSISTENT);
+        }
+
+        // 检查旧密码格式是否正确
+        if (!oldPassword.matches(UserConstant.PASSWORD_PATTERN)) {
+            throw new UpdateFailException(MessageConstant.OLD_PASSWORD_FORMAT_ERROR);
+        }
+
+        // 检查新密码格式是否正确
+        if (!newPassword.matches(UserConstant.PASSWORD_PATTERN)) {
+            throw new UpdateFailException(MessageConstant.NEW_PASSWORD_FORMAT_ERROR);
+        }
+
+        // 通过用户id获取用户名
+        User oldUser = userMapper.getById(userId);
+        String username = oldUser.getUsername();
+
+        // 检查旧密码是否正确
+        String encryptPwd = DigestUtils.md5DigestAsHex((oldPassword + username).getBytes(StandardCharsets.UTF_8));
+        if (!encryptPwd.equals(oldUser.getPassword())) {
+            throw new UpdateFailException(MessageConstant.OLD_PASSWORD_INPUT_ERROR);
+        }
+
+        // 对新密码进行加密
+        String newEncryptPwd = DigestUtils.md5DigestAsHex((newPassword + username).getBytes(StandardCharsets.UTF_8));
+
+        User user = User.builder()
+                .id(userId)
+                .password(newEncryptPwd)
                 .build();
 
         userMapper.update(user);

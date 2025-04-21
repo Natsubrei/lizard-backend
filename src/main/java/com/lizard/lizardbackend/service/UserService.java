@@ -36,4 +36,13 @@ public interface UserService {
      * @param file 用户头像文件
      */
     void updateInfo(Long userId, String nickname, String phone, MultipartFile file);
+
+    /**
+     * 修改用户密码
+     * @param userId 用户id
+     * @param oldPassword 旧密码
+     * @param newPassword 新密码
+     * @param confirmNewPassword 确认新密码
+     */
+    void updatePassword(Long userId, String oldPassword, String newPassword, String confirmNewPassword);
 }
