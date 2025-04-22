@@ -19,6 +19,7 @@ public interface MessageConstant {
     String OLD_PASSWORD_FORMAT_ERROR = "旧密码格式错误";
     String NEW_PASSWORD_FORMAT_ERROR = "新密码格式错误";
     String OLD_PASSWORD_INPUT_ERROR = "旧密码输入错误";
+    String PASSWORD_INPUT_ERROR = "密码输入错误";
 
     String LOGIN_EXPIRED = "登录已过期，请重新登录";
     String TOKEN_VERIFICATION_FAILED = "Token验证失败";

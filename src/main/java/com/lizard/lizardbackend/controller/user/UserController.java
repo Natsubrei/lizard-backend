@@ -1,10 +1,7 @@
 package com.lizard.lizardbackend.controller.user;
 
 import com.lizard.lizardbackend.constant.UserConstant;
-import com.lizard.lizardbackend.pojo.dto.UserLoginDTO;
-import com.lizard.lizardbackend.pojo.dto.UserPwdUpdateDTO;
-import com.lizard.lizardbackend.pojo.dto.UserRegisterDTO;
-import com.lizard.lizardbackend.pojo.dto.UserInfoUpdateDTO;
+import com.lizard.lizardbackend.pojo.dto.*;
 import com.lizard.lizardbackend.pojo.entity.User;
 import com.lizard.lizardbackend.pojo.vo.UserVO;
 import com.lizard.lizardbackend.result.Result;
@@ -98,7 +95,6 @@ public class UserController {
     @PutMapping("/info")
     public Result<?> updateInfo(@ModelAttribute UserInfoUpdateDTO userUpdateDTO, HttpServletRequest request) {
         Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
-
         String nickname = userUpdateDTO.getNickname();
         String phone = userUpdateDTO.getPhone();
         MultipartFile file = userUpdateDTO.getFile();
@@ -118,13 +114,29 @@ public class UserController {
     @PutMapping("/password")
     public Result<?> updatePassword(@RequestBody UserPwdUpdateDTO userPwdUpdateDTO, HttpServletRequest request) {
         Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
-
         String oldPassword = userPwdUpdateDTO.getOldPassword();
         String newPassword = userPwdUpdateDTO.getNewPassword();
         String confirmNewPassword = userPwdUpdateDTO.getConfirmNewPassword();
 
         log.info("用户修改密码：{}，{}", userId, userPwdUpdateDTO);
         userService.updatePassword(userId, oldPassword, newPassword, confirmNewPassword);
+
+        return Result.success();
+    }
+
+    /**
+     * 注销账号
+     * @param userDeactivateDTO 用户注销DTO
+     * @param request http请求
+     * @return 修改成功则返回成功Result
+     */
+    @DeleteMapping("/deactivate")
+    public Result<?> deactivate(@RequestBody UserDeactivateDTO userDeactivateDTO, HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
+        String password = userDeactivateDTO.getPassword();
+
+        log.info("用户注销：{}，{}", userId, password);
+        userService.deactivate(userId, password);
 
         return Result.success();
     }

@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
 
         // 检查用户是否存在
         User user = userMapper.getByUsername(username);
-        if (user == null) {
+        if (user == null || user.getIsDeleted() == 1) {
             throw new LoginFailException(MessageConstant.USERNAME_OR_PASSWORD_ERROR);
         }
 
@@ -180,23 +180,49 @@ public class UserServiceImpl implements UserService {
         }
 
         // 通过用户id获取用户名
-        User oldUser = userMapper.getById(userId);
-        String username = oldUser.getUsername();
+        User user = userMapper.getById(userId);
+        String username = user.getUsername();
 
         // 检查旧密码是否正确
         String encryptPwd = DigestUtils.md5DigestAsHex((oldPassword + username).getBytes(StandardCharsets.UTF_8));
-        if (!encryptPwd.equals(oldUser.getPassword())) {
+        if (!encryptPwd.equals(user.getPassword())) {
             throw new UpdateFailException(MessageConstant.OLD_PASSWORD_INPUT_ERROR);
         }
 
         // 对新密码进行加密
         String newEncryptPwd = DigestUtils.md5DigestAsHex((newPassword + username).getBytes(StandardCharsets.UTF_8));
 
-        User user = User.builder()
+        User userUpdate = User.builder()
                 .id(userId)
                 .password(newEncryptPwd)
                 .build();
 
-        userMapper.update(user);
+        userMapper.update(userUpdate);
+    }
+
+    @Override
+    public void deactivate(Long userId, String password) {
+        // 检查密码格式是否正确
+        if (!password.matches(UserConstant.PASSWORD_PATTERN)) {
+            throw new UpdateFailException(MessageConstant.PASSWORD_FORMAT_ERROR);
+        }
+
+        // 通过用户id获取用户名
+        User user = userMapper.getById(userId);
+        String username = user.getUsername();
+
+        // 检查密码是否正确
+        String encryptPwd = DigestUtils.md5DigestAsHex((password + username).getBytes(StandardCharsets.UTF_8));
+        if (!encryptPwd.equals(user.getPassword())) {
+            throw new UpdateFailException(MessageConstant.PASSWORD_INPUT_ERROR);
+        }
+
+        // 逻辑删除字段置为1，代表删除
+        User userUpdate = User.builder()
+                .id(userId)
+                .isDeleted(1)
+                .build();
+
+        userMapper.update(userUpdate);
     }
 }

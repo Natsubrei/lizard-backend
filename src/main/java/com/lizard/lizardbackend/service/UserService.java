@@ -45,4 +45,11 @@ public interface UserService {
      * @param confirmNewPassword 确认新密码
      */
     void updatePassword(Long userId, String oldPassword, String newPassword, String confirmNewPassword);
+
+    /**
+     * 注销账号
+     * @param userId 用户id
+     * @param password 用户密码
+     */
+    void deactivate(Long userId, String password);
 }
