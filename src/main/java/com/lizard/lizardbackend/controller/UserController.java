@@ -1,4 +1,4 @@
-package com.lizard.lizardbackend.controller.user;
+package com.lizard.lizardbackend.controller;
 
 import com.lizard.lizardbackend.constant.UserConstant;
 import com.lizard.lizardbackend.pojo.dto.*;
