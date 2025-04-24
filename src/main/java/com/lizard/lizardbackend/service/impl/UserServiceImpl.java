@@ -117,7 +117,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateInfo(Long userId, String nickname, String phone, MultipartFile file) {
         // 检查各字符是否为空
-        if (StringUtils.isAllBlank(nickname, phone) && file.isEmpty()) {
+        if (StringUtils.isAllBlank(nickname, phone) && (file == null || file.isEmpty())) {
             // 若全为空则之间返回
             return;
         }
