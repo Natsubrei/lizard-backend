@@ -1,0 +1,45 @@
+package com.lizard.lizardbackend.controller;
+
+import com.lizard.lizardbackend.constant.UserConstant;
+import com.lizard.lizardbackend.pojo.dto.PostCreateDTO;
+import com.lizard.lizardbackend.result.Result;
+import com.lizard.lizardbackend.service.PostService;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+/**
+ * 帖子相关接口
+ */
+@Slf4j
+@RestController
+@RequestMapping("/post")
+public class PostController {
+    private final PostService postService;
+
+    public PostController(PostService postService){
+        this.postService = postService;
+    }
+
+    /**
+     * 创建帖子
+     * @param postCreateDTO 帖子创建DTO
+     * @param request http请求
+     * @return 创建成功返回帖子id，创建失败返回null
+     */
+    @PostMapping("/create")
+    public Result<Long> CreatePost(@ModelAttribute PostCreateDTO postCreateDTO, HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
+        String title = postCreateDTO.getTitle();
+        String content = postCreateDTO.getContent();
+        Integer type = postCreateDTO.getType();
+        Integer price = postCreateDTO.getPrice();
+        MultipartFile file = postCreateDTO.getFile();
+
+        log.info("创建新帖子：{}，{}，{}，{}, {}, {}", userId, title, content, type, price, file.getName());
+        Long postId = postService.createPost(userId, title, content, type, price, file);
+
+        return Result.success(postId);
+    }
+}
