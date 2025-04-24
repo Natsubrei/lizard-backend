@@ -8,4 +8,14 @@ public interface PostConstant {
      * 帖子图片存放目录
      */
     String IMAGE_DIRECTOR = "image";
+
+    /**
+     * 标题最大长度
+     */
+    Integer TITLE_MAX_LENGTH = 32;
+
+    /**
+     * 正文最大长度
+     */
+    Integer CONTENT_MAX_LENGTH = 1000;
 }

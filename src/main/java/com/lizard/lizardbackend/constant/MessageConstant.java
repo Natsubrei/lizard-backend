@@ -25,4 +25,7 @@ public interface MessageConstant {
     String TOKEN_VERIFICATION_FAILED = "Token验证失败";
 
     String FILE_UPLOAD_FAILED = "文件上传失败";
+
+    String TITLE_LENGTH_EXCEED_ERROR = "标题长度过长";
+    String CONTENT_LENGTH_EXCEED_ERROR = "正文长度过长";
 }
