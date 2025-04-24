@@ -29,7 +29,7 @@ create table post
     title       varchar(64)                        not null comment '帖子标题',
     content     text                               not null comment '帖子正文',
     type        tinyint                            not null comment '交易类型',
-    status      tinyint                            not null comment '商品状态',
+    status      tinyint  default 0                 not null comment '商品状态',
     price       int                                null comment '预期价格',
     is_deleted  tinyint  default 0                 not null comment '是否被删除',
     create_time datetime default CURRENT_TIMESTAMP not null comment '创建时间'
