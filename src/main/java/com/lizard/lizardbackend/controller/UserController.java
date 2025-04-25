@@ -99,7 +99,7 @@ public class UserController {
         String phone = userUpdateDTO.getPhone();
         MultipartFile file = userUpdateDTO.getFile();
 
-        log.info("用户信息更新：{}，{}，{}，{}", userId, nickname, phone, file.getName());
+        log.info("用户信息更新：{}，{}，{}", userId, nickname, phone);
         userService.updateInfo(userId, nickname, phone, file);
 
         return Result.success();

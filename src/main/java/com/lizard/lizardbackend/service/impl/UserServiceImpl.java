@@ -133,7 +133,7 @@ public class UserServiceImpl implements UserService {
         }
 
         String avatar = null;
-        if (!file.isEmpty()) {
+        if (file != null && !file.isEmpty()) {
             try {
                 // 文件不为空则尝试上传到OSS
                 avatar = AliOssUtil.upload(file.getBytes(), file.getOriginalFilename(), UserConstant.AVATAR_DIRECTORY);
