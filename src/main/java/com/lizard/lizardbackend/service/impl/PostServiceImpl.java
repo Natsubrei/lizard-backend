@@ -1,8 +1,11 @@
 package com.lizard.lizardbackend.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.lizard.lizardbackend.constant.MessageConstant;
 import com.lizard.lizardbackend.constant.PostConstant;
 import com.lizard.lizardbackend.exception.ImageAddException;
+import com.lizard.lizardbackend.exception.PageQueryException;
 import com.lizard.lizardbackend.exception.PostCreateException;
 import com.lizard.lizardbackend.exception.PostDeleteException;
 import com.lizard.lizardbackend.mapper.ImageMapper;
@@ -10,6 +13,8 @@ import com.lizard.lizardbackend.mapper.PostMapper;
 import com.lizard.lizardbackend.mapper.UserMapper;
 import com.lizard.lizardbackend.pojo.entity.Image;
 import com.lizard.lizardbackend.pojo.entity.User;
+import com.lizard.lizardbackend.pojo.vo.PostQueryVO;
+import com.lizard.lizardbackend.result.PageResult;
 import com.lizard.lizardbackend.utils.AliOssUtil;
 import lombok.extern.slf4j.Slf4j;
 import com.lizard.lizardbackend.pojo.entity.Post;
@@ -142,5 +147,20 @@ public class PostServiceImpl implements PostService {
         }
 
         postMapper.delete(postId);
+    }
+
+    @Override
+    public PageResult pageQueryByUserId(Long userId, Integer pageNum, Integer pageSize) {
+        // 使用PageHelper进行分页查询
+        PageHelper.startPage(pageNum, pageSize);
+        Page<PostQueryVO> page = postMapper.pageQueryByUserId(userId);
+
+        // 查询失败则抛出异常
+        if (page == null) {
+            throw new PageQueryException(MessageConstant.PAGE_QUERY_ERROR);
+        }
+
+        // 返回帖子总数以及此次查询的结果
+        return new PageResult(page.getTotal(), page);
     }
 }

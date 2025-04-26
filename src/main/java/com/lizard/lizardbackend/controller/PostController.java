@@ -3,6 +3,7 @@ package com.lizard.lizardbackend.controller;
 import com.lizard.lizardbackend.constant.UserConstant;
 import com.lizard.lizardbackend.pojo.dto.PostCreateDTO;
 import com.lizard.lizardbackend.pojo.dto.ImageAddDTO;
+import com.lizard.lizardbackend.result.PageResult;
 import com.lizard.lizardbackend.result.Result;
 import com.lizard.lizardbackend.service.PostService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -55,7 +56,7 @@ public class PostController {
         Long postId = imageAddDTO.getPostId();
         MultipartFile file = imageAddDTO.getFile();
 
-        log.info("插入图片{}, {}", postId, file.getName());
+        log.info("插入图片：{}, {}", postId, file.getName());
         postService.addImageToPost(postId, userId, file);
 
         return Result.success();
@@ -70,9 +71,24 @@ public class PostController {
     public Result<?> deletePost(@PathVariable Long postId, HttpServletRequest request) {
         Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
 
-        log.info("删除帖子{}, {}", postId, userId);
+        log.info("删除帖子：{}, {}", postId, userId);
         postService.deletePost(postId, userId);
 
         return Result.success();
+    }
+
+    /**
+     * 根据用户id查询帖子
+     * @param userId 用户id
+     * @param pageNum 分页查询页号
+     * @param pageSize 分页查询每页大小
+     * @return 分页查询结果
+     */
+    @GetMapping("/list")
+    public Result<PageResult> listByUserId(Long userId, Integer pageNum, Integer pageSize) {
+        log.info("根据用户id查询帖子：{}, {}, {}", userId, pageNum, pageSize);
+        PageResult pageResult = postService.pageQueryByUserId(userId, pageNum, pageSize);
+
+        return Result.success(pageResult);
     }
 }

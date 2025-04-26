@@ -1,5 +1,6 @@
 package com.lizard.lizardbackend.service;
 
+import com.lizard.lizardbackend.result.PageResult;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface PostService {
@@ -28,4 +29,13 @@ public interface PostService {
      * @param userId 用户id
      */
     void deletePost(Long postId, Long userId);
+
+    /**
+     * 根据用户id查询帖子
+     * @param userId 用户id
+     * @param pageNum 分页查询页号
+     * @param pageSize 分页查询每页大小
+     * @return 分页查询结果
+     */
+    PageResult pageQueryByUserId(Long userId, Integer pageNum, Integer pageSize);
 }
