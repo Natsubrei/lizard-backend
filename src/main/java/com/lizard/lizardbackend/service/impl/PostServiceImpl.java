@@ -4,22 +4,21 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.lizard.lizardbackend.constant.MessageConstant;
 import com.lizard.lizardbackend.constant.PostConstant;
-import com.lizard.lizardbackend.exception.ImageAddException;
-import com.lizard.lizardbackend.exception.PageQueryException;
-import com.lizard.lizardbackend.exception.PostCreateException;
-import com.lizard.lizardbackend.exception.PostDeleteException;
+import com.lizard.lizardbackend.exception.*;
 import com.lizard.lizardbackend.mapper.ImageMapper;
 import com.lizard.lizardbackend.mapper.PostMapper;
 import com.lizard.lizardbackend.mapper.UserMapper;
 import com.lizard.lizardbackend.pojo.entity.Image;
 import com.lizard.lizardbackend.pojo.entity.User;
 import com.lizard.lizardbackend.pojo.vo.PostQueryVO;
+import com.lizard.lizardbackend.pojo.vo.PostVO;
 import com.lizard.lizardbackend.result.PageResult;
 import com.lizard.lizardbackend.utils.AliOssUtil;
 import lombok.extern.slf4j.Slf4j;
 import com.lizard.lizardbackend.pojo.entity.Post;
 import com.lizard.lizardbackend.service.PostService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -133,7 +132,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void deletePost(Long postId, Long userId) {
+    public void deleteById(Long postId, Long userId) {
         Post post = postMapper.getByPostId(postId);
 
         // 检查帖子是否存在
@@ -150,6 +149,21 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public PostVO queryById(Long postId) {
+        Post post = postMapper.getByPostId(postId);
+
+        // 检查帖子是否存在
+        if (post == null) {
+            throw new PostQueryException(MessageConstant.POST_NOT_EXISTS);
+        }
+
+        PostVO postVO = new PostVO();
+        BeanUtils.copyProperties(post, postVO);
+
+        return postVO;
+    }
+
+    @Override
     public PageResult pageQueryByUserId(Long userId, Integer pageNum, Integer pageSize) {
         // 使用PageHelper进行分页查询
         PageHelper.startPage(pageNum, pageSize);
@@ -157,7 +171,7 @@ public class PostServiceImpl implements PostService {
 
         // 查询失败则抛出异常
         if (page == null) {
-            throw new PageQueryException(MessageConstant.PAGE_QUERY_ERROR);
+            throw new PostQueryException(MessageConstant.PAGE_QUERY_ERROR);
         }
 
         // 返回帖子总数以及此次查询的结果

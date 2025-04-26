@@ -3,6 +3,7 @@ package com.lizard.lizardbackend.controller;
 import com.lizard.lizardbackend.constant.UserConstant;
 import com.lizard.lizardbackend.pojo.dto.PostCreateDTO;
 import com.lizard.lizardbackend.pojo.dto.ImageAddDTO;
+import com.lizard.lizardbackend.pojo.vo.PostVO;
 import com.lizard.lizardbackend.result.PageResult;
 import com.lizard.lizardbackend.result.Result;
 import com.lizard.lizardbackend.service.PostService;
@@ -72,9 +73,21 @@ public class PostController {
         Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
 
         log.info("删除帖子：{}, {}", postId, userId);
-        postService.deletePost(postId, userId);
+        postService.deleteById(postId, userId);
 
         return Result.success();
+    }
+
+    /**
+     * 根据帖子id查询帖子详情
+     * @param postId 帖子id
+     * @return 帖子详情
+     */
+    @GetMapping("/{postId}")
+    public Result<PostVO> queryPost(@PathVariable Long postId) {
+        log.info("查询帖子：{}", postId);
+        PostVO postVO = postService.queryById(postId);
+        return Result.success(postVO);
     }
 
     /**
@@ -88,7 +101,6 @@ public class PostController {
     public Result<PageResult> listByUserId(Long userId, Integer pageNum, Integer pageSize) {
         log.info("根据用户id查询帖子：{}, {}, {}", userId, pageNum, pageSize);
         PageResult pageResult = postService.pageQueryByUserId(userId, pageNum, pageSize);
-
         return Result.success(pageResult);
     }
 }

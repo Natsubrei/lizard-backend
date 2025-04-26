@@ -1,5 +1,6 @@
 package com.lizard.lizardbackend.service;
 
+import com.lizard.lizardbackend.pojo.vo.PostVO;
 import com.lizard.lizardbackend.result.PageResult;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,7 +29,14 @@ public interface PostService {
      * @param postId 帖子id
      * @param userId 用户id
      */
-    void deletePost(Long postId, Long userId);
+    void deleteById(Long postId, Long userId);
+
+    /**
+     * 根据帖子id查询帖子详情
+     * @param postId 帖子id
+     * @return 帖子详情
+     */
+    PostVO queryById(Long postId);
 
     /**
      * 根据用户id查询帖子
