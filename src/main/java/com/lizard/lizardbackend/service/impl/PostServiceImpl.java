@@ -2,6 +2,7 @@ package com.lizard.lizardbackend.service.impl;
 
 import com.lizard.lizardbackend.constant.MessageConstant;
 import com.lizard.lizardbackend.constant.PostConstant;
+import com.lizard.lizardbackend.exception.ImageAddException;
 import com.lizard.lizardbackend.exception.PostCreateException;
 import com.lizard.lizardbackend.mapper.ImageMapper;
 import com.lizard.lizardbackend.mapper.PostMapper;
@@ -81,4 +82,30 @@ public class PostServiceImpl implements PostService {
 
         return newPost.getId();
     }
+
+    @Override
+    public void addImageToPost(Long postId, MultipartFile file) {
+        //检查文件是否存在
+        if (file == null || file.isEmpty() ){
+           throw new ImageAddException(MessageConstant.ALL_FIELDS_REQUIRED) ;
+        }
+
+        String image = null;
+        if (!file.isEmpty()) {
+            try {
+                // 文件不为空则尝试上传到OSS
+                image = AliOssUtil.upload(file.getBytes(), file.getOriginalFilename(), PostConstant.IMAGE_DIRECTOR);
+            } catch (IOException e) {
+                throw new PostCreateException(MessageConstant.FILE_PROCESS_ERROR);
+            }
+        }
+
+        Image newImage = Image.builder()
+                .postId(postId)
+                .url(image)
+                .build();
+
+        imageMapper.insert(newImage);
+    }
+
 }
