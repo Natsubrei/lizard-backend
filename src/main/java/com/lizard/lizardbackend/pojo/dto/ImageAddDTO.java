@@ -8,12 +8,12 @@ import java.io.Serializable;
 @Data
 public class ImageAddDTO implements Serializable {
     /**
-     * 图片Id
+     * 图片id
      */
     private Long id;
 
     /**
-     * 帖子Id
+     * 帖子id
      */
     private Long postId;
 

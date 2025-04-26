@@ -6,11 +6,4 @@
         INSERT INTO post (user_id, username, title, content, type, price)
         VALUES (#{userId}, #{username}, #{title}, #{content}, #{type}, #{price})
     </insert>
-
-    <update id="update" parameterType="Post">
-        UPDATE post
-        SET
-            is_deleted = 1
-        WHERE id = #{id}
-    </update>
 </mapper>

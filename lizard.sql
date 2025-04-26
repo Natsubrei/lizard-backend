@@ -22,17 +22,18 @@ create table user
 
 create table post
 (
-    id          bigint auto_increment comment '帖子id'
+    id            bigint auto_increment comment '帖子id'
         primary key,
-    user_id     bigint                             not null comment '发布者id',
-    username    varchar(32)                        not null comment '发布者用户名',
-    title       varchar(64)                        not null comment '帖子标题',
-    content     text                               not null comment '帖子正文',
-    type        tinyint                            not null comment '交易类型',
-    status      tinyint  default 0                 not null comment '商品状态',
-    price       int                                null comment '预期价格',
-    is_deleted  tinyint  default 0                 not null comment '是否被删除',
-    create_time datetime default CURRENT_TIMESTAMP not null comment '创建时间'
+    user_id       bigint                             not null comment '发布者id',
+    username      varchar(32)                        not null comment '发布者用户名',
+    title         varchar(64)                        not null comment '帖子标题',
+    content       text                               not null comment '帖子正文',
+    content_brief varchar(127)                       not null comment '正文预览',
+    type          tinyint                            not null comment '交易类型',
+    status        tinyint  default 0                 not null comment '商品状态',
+    price         int                                null comment '预期价格',
+    is_deleted    tinyint  default 0                 not null comment '是否被删除',
+    create_time   datetime default CURRENT_TIMESTAMP not null comment '创建时间'
 )
     comment '帖子表';
 

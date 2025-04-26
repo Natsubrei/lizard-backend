@@ -51,17 +51,22 @@ public class PostServiceImpl implements PostService {
             throw new PostCreateException(MessageConstant.CONTENT_LENGTH_EXCEED_ERROR);
         }
 
+        // 通过用户id获取用户名
         User user = userMapper.getById(userId);
         String username = user.getUsername();
 
+        // 截取正文前面一部分作为预览
+        String contentBrief = content.substring(0, Math.min(64, content.length()));
+
         Post newPost = Post.builder()
-                        .userId(userId)
-                        .username(username)
-                        .title(title)
-                        .content(content)
-                        .type(type)
-                        .price(price)
-                        .build();
+                .userId(userId)
+                .username(username)
+                .title(title)
+                .content(content)
+                .contentBrief(contentBrief)
+                .type(type)
+                .price(price)
+                .build();
 
         postMapper.insert(newPost);
 
@@ -69,7 +74,7 @@ public class PostServiceImpl implements PostService {
         if (!file.isEmpty()) {
             try {
                 // 文件不为空则尝试上传到OSS
-                image = AliOssUtil.upload(file.getBytes(), file.getOriginalFilename(), PostConstant.IMAGE_DIRECTOR);
+                image = AliOssUtil.upload(file.getBytes(), file.getOriginalFilename(), PostConstant.IMAGE_DIRECTORY);
             } catch (IOException e) {
                 throw new PostCreateException(MessageConstant.FILE_PROCESS_ERROR);
             }
@@ -87,21 +92,21 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void addImageToPost(Long postId, Long userId, MultipartFile file) {
-        //检查文件是否存在
+        // 检查文件是否存在
         if (file == null || file.isEmpty() ){
            throw new ImageAddException(MessageConstant.ALL_FIELDS_REQUIRED) ;
         }
 
-        //检查用户Id和帖子是否对应
+        // 检查用户id和帖子是否对应
         if (!Objects.equals(postId, userId)){
-            throw new ImageAddException(MessageConstant.USERID_MISMATCH_ERROR);
+            throw new ImageAddException(MessageConstant.OWNER_MISMATCH_ERROR);
         }
 
         String image = null;
         if (!file.isEmpty()) {
             try {
                 // 文件不为空则尝试上传到OSS
-                image = AliOssUtil.upload(file.getBytes(), file.getOriginalFilename(), PostConstant.IMAGE_DIRECTOR);
+                image = AliOssUtil.upload(file.getBytes(), file.getOriginalFilename(), PostConstant.IMAGE_DIRECTORY);
             } catch (IOException e) {
                 throw new PostCreateException(MessageConstant.FILE_PROCESS_ERROR);
             }
@@ -117,17 +122,12 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void deletePost(Long postId, Long userId) {
-        Post post = postMapper.getUserId(postId);
-        //检查用户Id是否对应
-        if (!Objects.equals(post.getUserId(), userId)){
-            throw new PostDeleteException(MessageConstant.USERID_MISMATCH_ERROR);
+        // 检查用户帖子是否属于当前用户
+        Post post = postMapper.getByPostId(postId);
+        if (!Objects.equals(post.getUserId(), userId)) {
+            throw new PostDeleteException(MessageConstant.OWNER_MISMATCH_ERROR);
         }
 
-        Post newPost = Post.builder()
-                .id(postId)
-                .userId(userId)
-                .build();
-
-        postMapper.update(newPost);
+        postMapper.delete(postId);
     }
 }
