@@ -18,5 +18,12 @@ public interface PostService {
      * 向帖子中添加图片
      * @param postId 帖子Id
      */
-    void addImageToPost(Long postId, MultipartFile file);
+    void addImageToPost(Long postId, Long userId, MultipartFile file);
+
+    /**
+     * 删除帖子
+     * @param postId 帖子Id
+     * @param userId 用户Id
+     */
+    void deletePost(Long postId, Long userId);
 }

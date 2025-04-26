@@ -4,6 +4,7 @@ import com.lizard.lizardbackend.constant.MessageConstant;
 import com.lizard.lizardbackend.constant.PostConstant;
 import com.lizard.lizardbackend.exception.ImageAddException;
 import com.lizard.lizardbackend.exception.PostCreateException;
+import com.lizard.lizardbackend.exception.PostDeleteException;
 import com.lizard.lizardbackend.mapper.ImageMapper;
 import com.lizard.lizardbackend.mapper.PostMapper;
 import com.lizard.lizardbackend.mapper.UserMapper;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -84,10 +86,15 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void addImageToPost(Long postId, MultipartFile file) {
+    public void addImageToPost(Long postId, Long userId, MultipartFile file) {
         //检查文件是否存在
         if (file == null || file.isEmpty() ){
            throw new ImageAddException(MessageConstant.ALL_FIELDS_REQUIRED) ;
+        }
+
+        //检查用户Id和帖子是否对应
+        if (!Objects.equals(postId, userId)){
+            throw new ImageAddException(MessageConstant.USERID_MISMATCH_ERROR);
         }
 
         String image = null;
@@ -108,4 +115,19 @@ public class PostServiceImpl implements PostService {
         imageMapper.insert(newImage);
     }
 
+    @Override
+    public void deletePost(Long postId, Long userId) {
+        Post post = postMapper.getUserId(postId);
+        //检查用户Id是否对应
+        if (!Objects.equals(post.getUserId(), userId)){
+            throw new PostDeleteException(MessageConstant.USERID_MISMATCH_ERROR);
+        }
+
+        Post newPost = Post.builder()
+                .id(postId)
+                .userId(userId)
+                .build();
+
+        postMapper.update(newPost);
+    }
 }
