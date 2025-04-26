@@ -51,8 +51,8 @@ public class PostController {
      */
     @PostMapping("/image")
     public Result<?> addImageToPost(@ModelAttribute ImageAddDTO imageAddDTO, HttpServletRequest request) {
-        Long postId = imageAddDTO.getPostId();
         Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
+        Long postId = imageAddDTO.getPostId();
         MultipartFile file = imageAddDTO.getFile();
 
         log.info("插入图片{}, {}", postId, file.getName());

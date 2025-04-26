@@ -92,14 +92,21 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void addImageToPost(Long postId, Long userId, MultipartFile file) {
-        // 检查文件是否存在
+        // 检查文件是否为空
         if (file == null || file.isEmpty() ){
            throw new ImageAddException(MessageConstant.ALL_FIELDS_REQUIRED) ;
         }
 
-        // 检查用户id和帖子是否对应
-        if (!Objects.equals(postId, userId)){
-            throw new ImageAddException(MessageConstant.OWNER_MISMATCH_ERROR);
+        Post post = postMapper.getByPostId(postId);
+
+        // 检查帖子是否存在
+        if (post == null || post.getIsDeleted() == 1) {
+            throw new PostCreateException(MessageConstant.POST_NOT_EXISTS);
+        }
+
+        // 检查用户帖子是否属于当前用户
+        if (!Objects.equals(post.getUserId(), userId)) {
+            throw new PostCreateException(MessageConstant.OWNER_MISMATCH_ERROR);
         }
 
         String image = null;
@@ -122,8 +129,14 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void deletePost(Long postId, Long userId) {
-        // 检查用户帖子是否属于当前用户
         Post post = postMapper.getByPostId(postId);
+
+        // 检查帖子是否存在
+        if (post == null || post.getIsDeleted() == 1) {
+            throw new PostDeleteException(MessageConstant.POST_NOT_EXISTS);
+        }
+
+        // 检查用户帖子是否属于当前用户
         if (!Objects.equals(post.getUserId(), userId)) {
             throw new PostDeleteException(MessageConstant.OWNER_MISMATCH_ERROR);
         }

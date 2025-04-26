@@ -15,8 +15,10 @@ public interface PostService {
     Long createPost(Long userId, String title, String content, Integer type, Integer price, MultipartFile file);
 
     /**
-     * 向帖子中添加图片
+     * 给帖子添加图片
      * @param postId 帖子id
+     * @param userId 用户id
+     * @param file 图片文件
      */
     void addImageToPost(Long postId, Long userId, MultipartFile file);
 
