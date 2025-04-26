@@ -7,7 +7,7 @@ public interface PostConstant {
     /**
      * 帖子图片存放目录
      */
-    String IMAGE_DIRECTOR = "image";
+    String IMAGE_DIRECTORY = "image";
 
     /**
      * 标题最大长度

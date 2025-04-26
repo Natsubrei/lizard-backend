@@ -38,6 +38,11 @@ public class Post implements Serializable {
     private String content;
 
     /**
+     * 正文预览
+     */
+    private String contentBrief;
+
+    /**
      * 交易类型
      */
     private Integer type;

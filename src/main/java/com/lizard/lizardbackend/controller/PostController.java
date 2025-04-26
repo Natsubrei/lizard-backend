@@ -62,8 +62,8 @@ public class PostController {
     }
 
     /**
-     *
-     * @param postId 帖子Id
+     * 根据帖子id删除帖子
+     * @param postId 帖子id
      * @return 删除成功返回Result
      */
     @DeleteMapping("/{postId}")
