@@ -29,4 +29,7 @@ public interface MessageConstant {
     String TITLE_LENGTH_EXCEED_ERROR = "标题长度过长";
     String CONTENT_LENGTH_EXCEED_ERROR = "正文长度过长";
     String OWNER_MISMATCH_ERROR = "帖子所属用户与当前用户不匹配";
+    String POST_NOT_EXISTS = "帖子不存在";
+
+    String PAGE_QUERY_ERROR = "分页查询错误";
 }

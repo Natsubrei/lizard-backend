@@ -1,20 +1,24 @@
 package com.lizard.lizardbackend.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.lizard.lizardbackend.constant.MessageConstant;
 import com.lizard.lizardbackend.constant.PostConstant;
-import com.lizard.lizardbackend.exception.ImageAddException;
-import com.lizard.lizardbackend.exception.PostCreateException;
-import com.lizard.lizardbackend.exception.PostDeleteException;
+import com.lizard.lizardbackend.exception.*;
 import com.lizard.lizardbackend.mapper.ImageMapper;
 import com.lizard.lizardbackend.mapper.PostMapper;
 import com.lizard.lizardbackend.mapper.UserMapper;
 import com.lizard.lizardbackend.pojo.entity.Image;
 import com.lizard.lizardbackend.pojo.entity.User;
+import com.lizard.lizardbackend.pojo.vo.PostQueryVO;
+import com.lizard.lizardbackend.pojo.vo.PostVO;
+import com.lizard.lizardbackend.result.PageResult;
 import com.lizard.lizardbackend.utils.AliOssUtil;
 import lombok.extern.slf4j.Slf4j;
 import com.lizard.lizardbackend.pojo.entity.Post;
 import com.lizard.lizardbackend.service.PostService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -92,14 +96,21 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void addImageToPost(Long postId, Long userId, MultipartFile file) {
-        // 检查文件是否存在
+        // 检查文件是否为空
         if (file == null || file.isEmpty() ){
            throw new ImageAddException(MessageConstant.ALL_FIELDS_REQUIRED) ;
         }
 
-        // 检查用户id和帖子是否对应
-        if (!Objects.equals(postId, userId)){
-            throw new ImageAddException(MessageConstant.OWNER_MISMATCH_ERROR);
+        Post post = postMapper.getByPostId(postId);
+
+        // 检查帖子是否存在
+        if (post == null || post.getIsDeleted() == 1) {
+            throw new PostCreateException(MessageConstant.POST_NOT_EXISTS);
+        }
+
+        // 检查用户帖子是否属于当前用户
+        if (!Objects.equals(post.getUserId(), userId)) {
+            throw new PostCreateException(MessageConstant.OWNER_MISMATCH_ERROR);
         }
 
         String image = null;
@@ -121,13 +132,49 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void deletePost(Long postId, Long userId) {
-        // 检查用户帖子是否属于当前用户
+    public void deleteById(Long postId, Long userId) {
         Post post = postMapper.getByPostId(postId);
+
+        // 检查帖子是否存在
+        if (post == null || post.getIsDeleted() == 1) {
+            throw new PostDeleteException(MessageConstant.POST_NOT_EXISTS);
+        }
+
+        // 检查用户帖子是否属于当前用户
         if (!Objects.equals(post.getUserId(), userId)) {
             throw new PostDeleteException(MessageConstant.OWNER_MISMATCH_ERROR);
         }
 
         postMapper.delete(postId);
+    }
+
+    @Override
+    public PostVO queryById(Long postId) {
+        Post post = postMapper.getByPostId(postId);
+
+        // 检查帖子是否存在
+        if (post == null) {
+            throw new PostQueryException(MessageConstant.POST_NOT_EXISTS);
+        }
+
+        PostVO postVO = new PostVO();
+        BeanUtils.copyProperties(post, postVO);
+
+        return postVO;
+    }
+
+    @Override
+    public PageResult pageQueryByUserId(Long userId, Integer pageNum, Integer pageSize) {
+        // 使用PageHelper进行分页查询
+        PageHelper.startPage(pageNum, pageSize);
+        Page<PostQueryVO> page = postMapper.pageQueryByUserId(userId);
+
+        // 查询失败则抛出异常
+        if (page == null) {
+            throw new PostQueryException(MessageConstant.PAGE_QUERY_ERROR);
+        }
+
+        // 返回帖子总数以及此次查询的结果
+        return new PageResult(page.getTotal(), page);
     }
 }

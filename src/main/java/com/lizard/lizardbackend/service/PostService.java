@@ -1,5 +1,7 @@
 package com.lizard.lizardbackend.service;
 
+import com.lizard.lizardbackend.pojo.vo.PostVO;
+import com.lizard.lizardbackend.result.PageResult;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface PostService {
@@ -15,8 +17,10 @@ public interface PostService {
     Long createPost(Long userId, String title, String content, Integer type, Integer price, MultipartFile file);
 
     /**
-     * 向帖子中添加图片
+     * 给帖子添加图片
      * @param postId 帖子id
+     * @param userId 用户id
+     * @param file 图片文件
      */
     void addImageToPost(Long postId, Long userId, MultipartFile file);
 
@@ -25,5 +29,21 @@ public interface PostService {
      * @param postId 帖子id
      * @param userId 用户id
      */
-    void deletePost(Long postId, Long userId);
+    void deleteById(Long postId, Long userId);
+
+    /**
+     * 根据帖子id查询帖子详情
+     * @param postId 帖子id
+     * @return 帖子详情
+     */
+    PostVO queryById(Long postId);
+
+    /**
+     * 根据用户id查询帖子
+     * @param userId 用户id
+     * @param pageNum 分页查询页号
+     * @param pageSize 分页查询每页大小
+     * @return 分页查询结果
+     */
+    PageResult pageQueryByUserId(Long userId, Integer pageNum, Integer pageSize);
 }
