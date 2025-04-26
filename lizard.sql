@@ -47,12 +47,18 @@ create table image
 
 create table trade
 (
+    trade_id    bigint                             not null comment '交易记录id',
     payer_id    bigint                             not null comment '付款用户id',
     payee_id    bigint                             not null comment '收款用户id',
     post_id     bigint                             not null comment '帖子id',
     status      tinyint                            not null comment '交易状态',
     is_deleted  tinyint  default 0                 not null comment '是否被删除',
+    payer_deleted tinyint default 0                not null comment '付款方是否删除',
+    payee_deleted tinyint default 0                not null comment '收款方是否删除',
     create_time datetime default CURRENT_TIMESTAMP not null comment '创建时间',
-    primary key (payer_id, payee_id, post_id)
+    primary key (trade_id),
+    unique key idx_unique_trade (payer_id, payee_id, post_id),
+    index idx_payer (payer_id),
+    index idx_payee (payee_id)
 )
     comment '交易表';
