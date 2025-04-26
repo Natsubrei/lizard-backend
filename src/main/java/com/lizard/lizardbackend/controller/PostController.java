@@ -2,6 +2,7 @@ package com.lizard.lizardbackend.controller;
 
 import com.lizard.lizardbackend.constant.UserConstant;
 import com.lizard.lizardbackend.pojo.dto.PostCreateDTO;
+import com.lizard.lizardbackend.pojo.dto.ImageAddDTO;
 import com.lizard.lizardbackend.result.Result;
 import com.lizard.lizardbackend.service.PostService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,7 +30,7 @@ public class PostController {
      * @return 创建成功返回帖子id，创建失败返回null
      */
     @PostMapping("/create")
-    public Result<Long> CreatePost(@ModelAttribute PostCreateDTO postCreateDTO, HttpServletRequest request) {
+    public Result<Long> createPost(@ModelAttribute PostCreateDTO postCreateDTO, HttpServletRequest request) {
         Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
         String title = postCreateDTO.getTitle();
         String content = postCreateDTO.getContent();
@@ -41,5 +42,21 @@ public class PostController {
         Long postId = postService.createPost(userId, title, content, type, price, file);
 
         return Result.success(postId);
+    }
+
+    /**
+     * 向帖子中添加图片
+     * @param imageAddDTO 图片添加DTO
+     * @return 添加成功返回Result
+     */
+    @PostMapping("/image")
+    public Result<?> addImageToPost(@ModelAttribute ImageAddDTO imageAddDTO) {
+        Long postId = imageAddDTO.getPostId();
+        MultipartFile file = imageAddDTO.getFile();
+
+        log.info("插入图片{}, {}", postId, file.getName());
+        postService.addImageToPost(postId, file);
+
+        return Result.success();
     }
 }
