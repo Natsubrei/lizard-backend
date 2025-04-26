@@ -50,12 +50,28 @@ public class PostController {
      * @return 添加成功返回Result
      */
     @PostMapping("/image")
-    public Result<?> addImageToPost(@ModelAttribute ImageAddDTO imageAddDTO) {
+    public Result<?> addImageToPost(@ModelAttribute ImageAddDTO imageAddDTO, HttpServletRequest request) {
         Long postId = imageAddDTO.getPostId();
+        Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
         MultipartFile file = imageAddDTO.getFile();
 
         log.info("插入图片{}, {}", postId, file.getName());
-        postService.addImageToPost(postId, file);
+        postService.addImageToPost(postId, userId, file);
+
+        return Result.success();
+    }
+
+    /**
+     *
+     * @param postId 帖子Id
+     * @return 删除成功返回Result
+     */
+    @DeleteMapping("/{postId}")
+    public Result<?> deletePost(@PathVariable Long postId, HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
+
+        log.info("删除帖子{}, {}", postId, userId);
+        postService.deletePost(postId, userId);
 
         return Result.success();
     }
