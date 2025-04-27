@@ -25,6 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Objects;
 
+import static com.lizard.lizardbackend.constant.PostConstant.*;
+
 @Slf4j
 @Service
 public class PostServiceImpl implements PostService {
@@ -175,6 +177,27 @@ public class PostServiceImpl implements PostService {
         }
 
         // 返回帖子总数以及此次查询的结果
+        return new PageResult(page.getTotal(), page);
+    }
+
+    @Override
+    public PageResult pageQueryByType(Integer type, Integer pageNum, Integer pageSize) {
+        // 使用PageHelper进行分页查询
+        PageHelper.startPage(pageNum, pageSize);
+        Page<PostQueryVO> page = postMapper.pageQueryByType(type);
+
+        // 查询失败则抛出异常
+        if (page == null) {
+            throw new PostCreateException(MessageConstant.PAGE_QUERY_ERROR);
+        }
+
+        // 交易类型错误抛出异常
+        if (!Objects.equals(type, STATUS_BUY) && !Objects.equals(type, STATUS_SELL) && !Objects.equals(type, STATUS_RENT)
+                && !Objects.equals(type, STATUS_LEND)) {
+            throw new PostQueryException(MessageConstant.TYPE_ERROR);
+        }
+
+        //返回帖子总数以及此次查询结果
         return new PageResult(page.getTotal(), page);
     }
 }

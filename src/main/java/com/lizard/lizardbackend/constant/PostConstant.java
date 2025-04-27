@@ -18,4 +18,24 @@ public interface PostConstant {
      * 正文最大长度
      */
     Integer CONTENT_MAX_LENGTH = 1000;
+
+    /**
+     * 想买入
+     */
+    Integer STATUS_BUY = 0;
+
+    /**
+     * 想卖出
+     */
+    Integer STATUS_SELL = 1;
+
+    /**
+     * 想租入
+     */
+    Integer STATUS_RENT = 2;
+
+    /**
+     * 想借出
+     */
+    Integer STATUS_LEND = 3;
 }

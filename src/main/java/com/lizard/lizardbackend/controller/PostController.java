@@ -40,7 +40,7 @@ public class PostController {
         Integer price = postCreateDTO.getPrice();
         MultipartFile file = postCreateDTO.getFile();
 
-        log.info("创建新帖子：{}，{}，{}，{}, {}, {}", userId, title, content, type, price, file.getName());
+        log.info("创建新帖子：{}，{}，{}，{}, {}", userId, title, content, type, price);
         Long postId = postService.createPost(userId, title, content, type, price, file);
 
         return Result.success(postId);
@@ -57,7 +57,7 @@ public class PostController {
         Long postId = imageAddDTO.getPostId();
         MultipartFile file = imageAddDTO.getFile();
 
-        log.info("插入图片：{}, {}", postId, file.getName());
+        log.info("插入图片：{}", postId);
         postService.addImageToPost(postId, userId, file);
 
         return Result.success();
@@ -101,6 +101,20 @@ public class PostController {
     public Result<PageResult> listByUserId(Long userId, Integer pageNum, Integer pageSize) {
         log.info("根据用户id查询帖子：{}, {}, {}", userId, pageNum, pageSize);
         PageResult pageResult = postService.pageQueryByUserId(userId, pageNum, pageSize);
+        return Result.success(pageResult);
+    }
+
+    /**
+     * 根据帖子标签查询帖子
+     * @param type 帖子标签
+     * @param pageNum 分页查询页号
+     * @param pageSize 分页查询每页大小
+     * @return 分页查询结果
+     */
+    @GetMapping("/type")
+    public Result<PageResult> listByType(Integer type, Integer pageNum, Integer pageSize) {
+        log.info("根据帖子类型查询帖子：{}, {}, {}", type, pageNum, pageSize);
+        PageResult pageResult = postService.pageQueryByType(type, pageNum, pageSize);
         return Result.success(pageResult);
     }
 }
