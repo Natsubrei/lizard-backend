@@ -5,32 +5,22 @@ package com.lizard.lizardbackend.constant;
  */
 public interface TradeConstant {
     /**
-     * 交易记录id常量
-     */
-    String TRADE_ID = "TRADE_ID";
-
-    /**
-     * 交易状态 - 进行中
+     * 交易状态 - 待交易
      */
     int STATUS_IN_PROGRESS = 0;
 
     /**
-     * 交易状态 - 已完成
+     * 交易状态 - 交易建立
      */
-    int STATUS_COMPLETED = 1;
+    int STATUS_ESTABLISHED = 1;
 
     /**
-     * 交易状态 - 已取消
+     * 交易状态 - 交易成功
      */
-    int STATUS_CANCELLED = 2;
+    int STATUS_SUCCESS = 2;
 
     /**
-     * 删除类型 - 逻辑删除
+     * 交易状态 - 交易失败
      */
-    int DELETE_TYPE_LOGICAL = 0;
-
-    /**
-     * 删除类型 - 物理删除
-     */
-    int DELETE_TYPE_PHYSICAL = 1;
+    int STATUS_FAILURE = 3;
 }

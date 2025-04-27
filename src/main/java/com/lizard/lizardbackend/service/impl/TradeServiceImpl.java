@@ -1,70 +1,121 @@
 package com.lizard.lizardbackend.service.impl;
 
+import com.lizard.lizardbackend.constant.MessageConstant;
 import com.lizard.lizardbackend.constant.TradeConstant;
+import com.lizard.lizardbackend.exception.TradeCreateException;
+import com.lizard.lizardbackend.exception.TradeDeleteException;
+import com.lizard.lizardbackend.mapper.PostMapper;
 import com.lizard.lizardbackend.mapper.TradeMapper;
-import com.lizard.lizardbackend.pojo.dto.TradeCreateDTO;
-import com.lizard.lizardbackend.pojo.dto.TradeDeleteDTO;
+import com.lizard.lizardbackend.mapper.UserMapper;
+import com.lizard.lizardbackend.pojo.entity.Post;
 import com.lizard.lizardbackend.pojo.entity.Trade;
-import com.lizard.lizardbackend.pojo.vo.TradeVO;
+import com.lizard.lizardbackend.pojo.entity.User;
 import com.lizard.lizardbackend.service.TradeService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Slf4j
 @Service
 public class TradeServiceImpl implements TradeService {
     private final TradeMapper tradeMapper;
+    private final UserMapper userMapper;
+    private final PostMapper postMapper;
 
-    public TradeServiceImpl(TradeMapper tradeMapper) {
+    public TradeServiceImpl(TradeMapper tradeMapper, UserMapper userMapper, PostMapper postMapper) {
         this.tradeMapper = tradeMapper;
+        this.userMapper = userMapper;
+        this.postMapper = postMapper;
     }
 
     @Override
-    public TradeVO createTrade(TradeCreateDTO tradeCreateDTO) {
-        // 创建交易实体
-        Trade trade = new Trade();
-        trade.setTradeId(System.currentTimeMillis()); // 简单使用时间戳作为ID
-        trade.setPayerId(tradeCreateDTO.getPayerId());
-        trade.setPayeeId(tradeCreateDTO.getPayeeId());
-        trade.setPostId(tradeCreateDTO.getPostId());
-        trade.setStatus(TradeConstant.STATUS_IN_PROGRESS);
-        trade.setCreateTime(LocalDateTime.now());
+    public Long createTrade(Long userId, Long payerId, Long payeeId, Long postId) {
+        // 检查各字段是否为空
+        if (payerId == null || payeeId == null || postId == null) {
+            throw new TradeCreateException(MessageConstant.ALL_FIELDS_REQUIRED);
+        }
 
-        // 保存交易记录
-        tradeMapper.insert(trade);
-        log.info("创建交易记录成功，交易ID：{}", trade.getTradeId());
+        // 创建交易的用户应为付款方，且付款方与收款方不能为同一人
+        if (!Objects.equals(userId, payerId) || payerId.equals(payeeId)) {
+            throw new TradeCreateException(MessageConstant.TRADE_ERROR);
+        }
 
-        // 转换为VO返回
-        TradeVO tradeVO = new TradeVO();
-        BeanUtils.copyProperties(trade, tradeVO);
-        return tradeVO;
+        // 检查用户是否存在
+        User payer = userMapper.getById(payerId);
+        User payee = userMapper.getById(payeeId);
+        if (payer == null || payee == null || payer.getIsDeleted() == 1 || payee.getIsDeleted() == 1) {
+            throw new TradeCreateException(MessageConstant.TRADING_USER_NOT_EXISTS);
+        }
+
+        // 检查帖子是否存在
+        Post post = postMapper.getByPostId(postId);
+        if (post == null || post.getIsDeleted() == 1) {
+            throw new TradeCreateException(MessageConstant.POST_NOT_EXISTS);
+        }
+
+        // 检查帖子是否已经被交易
+        if (post.getStatus() == 1) {
+            throw new TradeCreateException(MessageConstant.ITEM_HAS_BEEN_TRADED);
+        }
+
+        // 帖子发布者和收款方应为同一人
+        if (!Objects.equals(post.getUserId(), payeeId)) {
+            throw new TradeCreateException(MessageConstant.TRADE_ERROR);
+        }
+
+        // 检查交易记录是否已经存在
+        Trade trade = tradeMapper.getByThreeId(payerId, payeeId, postId);
+        if (trade != null) {
+            throw new TradeCreateException(MessageConstant.TRADE_EXISTS);
+        }
+
+        Trade newTrade = Trade.builder()
+                .payerId(payerId)
+                .payeeId(payeeId)
+                .postId(postId)
+                .build();
+
+        return tradeMapper.insert(newTrade);
     }
 
     @Override
-    public void deleteTrade(TradeDeleteDTO tradeDeleteDTO) {
-        Long tradeId = tradeDeleteDTO.getTradeId();
-        Long userId = tradeDeleteDTO.getUserId();
-        Integer deleteType = tradeDeleteDTO.getDeleteType();
-
-        // 根据删除类型执行不同的删除操作
-        int affectedRows;
-        if (deleteType == TradeConstant.DELETE_TYPE_PHYSICAL) {
-            // 物理删除
-            affectedRows = tradeMapper.physicalDelete(tradeId, userId);
-        } else {
-            // 逻辑删除
-            Trade trade = tradeMapper.getById(tradeId);
-            boolean isPayer = trade != null && trade.getPayerId().equals(userId);
-            affectedRows = tradeMapper.updateDeleteStatus(tradeId, userId, isPayer);
+    public void deleteTrade(Long userId, Long tradeId) {
+        // 检查交易记录是否存在
+        Trade trade = tradeMapper.getById(tradeId);
+        if (trade == null) {
+            throw new TradeDeleteException(MessageConstant.TRADE_NOT_EXISTS);
         }
 
-        if (affectedRows == 0) {
-            log.warn("删除交易记录失败，tradeId: {}, userId: {}", tradeId, userId);
-        } else {
-            log.info("成功删除交易记录，tradeId: {}, userId: {}, deleteType: {}", tradeId, userId, deleteType == TradeConstant.DELETE_TYPE_PHYSICAL ? "物理删除" : "逻辑删除");
+        // 交易进行中将无法删除交易记录
+        Integer status = trade.getStatus();
+        if (status == TradeConstant.STATUS_IN_PROGRESS || status == TradeConstant.STATUS_ESTABLISHED) {
+            throw new TradeDeleteException(MessageConstant.TRADE_IN_PROGRESS);
         }
+
+        boolean isPayer;
+        Long payerId = trade.getPayerId();
+        Long payeeId = trade.getPayeeId();
+        if (Objects.equals(userId, payerId)) {
+            isPayer = true;
+        } else if (Objects.equals(userId, payeeId)) {
+            isPayer = false;
+        } else {
+            throw new TradeDeleteException(MessageConstant.TRADE_OWNER_MISMATCH_ERROR);
+        }
+
+        // 检查交易记录是否已经被删除
+        if ((isPayer && trade.getPayerDeleted() == 1)
+            || (!isPayer && trade.getPayeeDeleted() == 1)) {
+            throw new TradeDeleteException(MessageConstant.TRADE_NOT_EXISTS);
+        }
+
+        Trade tradeUpdate = Trade.builder()
+                .id(tradeId)
+                .payerDeleted(isPayer ? 1 : null)
+                .payeeDeleted(isPayer ? null : 1)
+                .build();
+
+        tradeMapper.update(tradeUpdate);
     }
 }

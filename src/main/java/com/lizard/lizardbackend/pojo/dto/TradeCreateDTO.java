@@ -23,9 +23,4 @@ public class TradeCreateDTO implements Serializable {
      * 帖子id
      */
     private Long postId;
-
-    /**
-     * 交易状态
-     */
-    private Integer status;
 }

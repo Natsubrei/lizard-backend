@@ -20,16 +20,19 @@ public interface MessageConstant {
     String NEW_PASSWORD_FORMAT_ERROR = "新密码格式错误";
     String OLD_PASSWORD_INPUT_ERROR = "旧密码输入错误";
     String PASSWORD_INPUT_ERROR = "密码输入错误";
-
     String LOGIN_EXPIRED = "登录已过期，请重新登录";
     String TOKEN_VERIFICATION_FAILED = "Token验证失败";
-
     String FILE_UPLOAD_FAILED = "文件上传失败";
-
     String TITLE_LENGTH_EXCEED_ERROR = "标题长度过长";
     String CONTENT_LENGTH_EXCEED_ERROR = "正文长度过长";
-    String OWNER_MISMATCH_ERROR = "帖子所属用户与当前用户不匹配";
+    String POST_OWNER_MISMATCH_ERROR = "帖子所属用户与当前用户不匹配";
     String POST_NOT_EXISTS = "帖子不存在";
-
     String PAGE_QUERY_ERROR = "分页查询错误";
+    String TRADE_ERROR = "交易失败";
+    String TRADING_USER_NOT_EXISTS = "交易用户不存在";
+    String ITEM_HAS_BEEN_TRADED = "该物品已被交易";
+    String TRADE_NOT_EXISTS = "交易记录不存在";
+    String TRADE_EXISTS = "交易记录已存在";
+    String TRADE_OWNER_MISMATCH_ERROR = "交易记录所属用户与当前用户不匹配";
+    String TRADE_IN_PROGRESS = "交易进行中，无法删除记录";
 }

@@ -110,7 +110,7 @@ public class PostServiceImpl implements PostService {
 
         // 检查用户帖子是否属于当前用户
         if (!Objects.equals(post.getUserId(), userId)) {
-            throw new PostCreateException(MessageConstant.OWNER_MISMATCH_ERROR);
+            throw new PostCreateException(MessageConstant.POST_OWNER_MISMATCH_ERROR);
         }
 
         String image = null;
@@ -142,7 +142,7 @@ public class PostServiceImpl implements PostService {
 
         // 检查用户帖子是否属于当前用户
         if (!Objects.equals(post.getUserId(), userId)) {
-            throw new PostDeleteException(MessageConstant.OWNER_MISMATCH_ERROR);
+            throw new PostDeleteException(MessageConstant.POST_OWNER_MISMATCH_ERROR);
         }
 
         postMapper.delete(postId);

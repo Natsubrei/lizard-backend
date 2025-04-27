@@ -2,31 +2,24 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lizard.lizardbackend.mapper.TradeMapper">
-    <insert id="insert" useGeneratedKeys="true" keyProperty="tradeId">
-        INSERT INTO trade (trade_id, payer_id, payee_id, post_id, status,
-        is_deleted, payer_deleted, payee_deleted, create_time)
-        VALUES (#{tradeId}, #{payerId}, #{payeeId}, #{postId}, #{status},
-        0, 0, 0, #{createTime})
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO trade (payer_id, payee_id, post_id)
+        VALUES (#{payerId}, #{payeeId}, #{postId})
     </insert>
 
-    <update id="updateDeleteStatus">
-        UPDATE trade SET
-        <choose>
-            <when test="isPayer">
-                payer_deleted = 1
-            </when>
-            <otherwise>
-                payee_deleted = 1
-            </otherwise>
-        </choose>
-        WHERE trade_id = #{tradeId} AND
-        <choose>
-            <when test="isPayer">
-                payer_id = #{userId}
-            </when>
-            <otherwise>
-                payee_id = #{userId}
-            </otherwise>
-        </choose>
+    <update id="update" parameterType="Trade">
+        UPDATE trade
+        <set>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="payerDeleted != null">
+                payer_deleted = #{payerDeleted},
+            </if>
+            <if test="payeeDeleted != null">
+                payee_deleted = #{payeeDeleted}
+            </if>
+        </set>
+        WHERE id = #{id}
     </update>
 </mapper>

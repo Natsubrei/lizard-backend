@@ -1,20 +1,20 @@
 package com.lizard.lizardbackend.service;
 
-import com.lizard.lizardbackend.pojo.dto.TradeCreateDTO;
-import com.lizard.lizardbackend.pojo.dto.TradeDeleteDTO;
-import com.lizard.lizardbackend.pojo.vo.TradeVO;
-
 public interface TradeService {
     /**
      * 创建交易记录
-     * @param tradeCreateDTO 创建交易DTO
-     * @return 交易记录VO
+     * @param userId 用户id
+     * @param payerId 付款方id
+     * @param payeeId 收款方id
+     * @param postId 帖子id
+     * @return 交易记录id
      */
-    TradeVO createTrade(TradeCreateDTO tradeCreateDTO);
+    Long createTrade(Long userId, Long payerId, Long payeeId, Long postId);
 
     /**
      * 删除交易记录
-     * @param tradeDeleteDTO 删除交易DTO
+     * @param userId 用户id
+     * @param tradeId 交易记录id
      */
-    void deleteTrade(TradeDeleteDTO tradeDeleteDTO);
+    void deleteTrade(Long userId, Long tradeId);
 }

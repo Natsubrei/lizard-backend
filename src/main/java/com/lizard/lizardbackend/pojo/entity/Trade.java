@@ -1,9 +1,7 @@
 package com.lizard.lizardbackend.pojo.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -13,13 +11,11 @@ import java.time.LocalDateTime;
  */
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class Trade implements Serializable {
     /**
      * 交易记录id
      */
-    private Long tradeId;
+    private Long id;
 
     /**
      * 付款用户id
@@ -40,11 +36,6 @@ public class Trade implements Serializable {
      * 交易状态
      */
     private Integer status;
-
-    /**
-     * 是否被删除
-     */
-    private Integer isDeleted;
 
     /**
      * 付款方是否删除

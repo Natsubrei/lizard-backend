@@ -2,14 +2,15 @@ package com.lizard.lizardbackend.controller;
 
 import com.lizard.lizardbackend.constant.UserConstant;
 import com.lizard.lizardbackend.pojo.dto.TradeCreateDTO;
-import com.lizard.lizardbackend.pojo.dto.TradeDeleteDTO;
-import com.lizard.lizardbackend.pojo.vo.TradeVO;
 import com.lizard.lizardbackend.result.Result;
 import com.lizard.lizardbackend.service.TradeService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * 交易相关接口
+ */
 @Slf4j
 @RestController
 @RequestMapping("/trade")
@@ -24,31 +25,34 @@ public class TradeController {
      * 创建交易记录
      * @param tradeCreateDTO 创建交易DTO
      * @param request http请求
-     * @return 交易记录VO
+     * @return 交易记录id
      */
     @PostMapping("/create")
-    public Result<TradeVO> createTrade(@RequestBody TradeCreateDTO tradeCreateDTO, HttpServletRequest request) {
+    public Result<Long> createTrade(@RequestBody TradeCreateDTO tradeCreateDTO, HttpServletRequest request) {
         Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
-        tradeCreateDTO.setPayerId(userId); // 设置付款方为当前用户
+        Long payerId = tradeCreateDTO.getPayerId();
+        Long payeeId = tradeCreateDTO.getPayeeId();
+        Long postId = tradeCreateDTO.getPostId();
 
         log.info("创建交易记录：{}", tradeCreateDTO);
-        TradeVO tradeVO = tradeService.createTrade(tradeCreateDTO);
-        return Result.success(tradeVO);
+        Long tradeId = tradeService.createTrade(userId, payerId, payeeId, postId);
+
+        return Result.success(tradeId);
     }
 
     /**
      * 删除交易记录
-     * @param tradeDeleteDTO 删除交易DTO
+     * @param tradeId 交易id
      * @param request http请求
-     * @return 操作结果
+     * @return 删除成功则返回成功Result
      */
-    @DeleteMapping("/delete")
-    public Result<?> deleteTrade(@RequestBody TradeDeleteDTO tradeDeleteDTO, HttpServletRequest request) {
+    @DeleteMapping("/{tradeId}")
+    public Result<?> deleteTrade(@PathVariable Long tradeId, HttpServletRequest request) {
         Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
-        tradeDeleteDTO.setUserId(userId);
 
-        log.info("删除交易记录：{}", tradeDeleteDTO);
-        tradeService.deleteTrade(tradeDeleteDTO);
+        log.info("删除交易记录：userId：{}，tradeId：{}", userId, tradeId);
+        tradeService.deleteTrade(userId, tradeId);
+
         return Result.success();
     }
 }
