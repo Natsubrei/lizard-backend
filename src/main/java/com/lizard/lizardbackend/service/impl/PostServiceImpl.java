@@ -188,7 +188,7 @@ public class PostServiceImpl implements PostService {
 
         // 查询失败则抛出异常
         if (page == null) {
-            throw new PostCreateException(MessageConstant.PAGE_QUERY_ERROR);
+            throw new PostQueryException(MessageConstant.PAGE_QUERY_ERROR);
         }
 
         // 交易类型错误抛出异常

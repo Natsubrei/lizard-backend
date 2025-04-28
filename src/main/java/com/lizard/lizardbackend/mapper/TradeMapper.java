@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface TradeMapper {
-    Long insert(Trade trade);
+    void insert(Trade trade);
 
     @Select("SELECT * FROM trade WHERE id = #{id}")
     Trade getById(Long id);
