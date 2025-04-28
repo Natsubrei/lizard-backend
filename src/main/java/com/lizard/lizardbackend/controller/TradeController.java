@@ -55,4 +55,19 @@ public class TradeController {
 
         return Result.success();
     }
+    /**
+     * 取消交易
+     * @param tradeId  交易id
+     * @param request http请求
+     * @return 交易记录id
+     */
+    @PutMapping("/cancel/{tradeId}")
+    public Result<?> cancelTrade(@PathVariable Long tradeId, HttpServletRequest request){
+        Long userId =(Long) request.getAttribute(UserConstant.USER_ID);
+
+        log.info("取消交易： userId：{}，tradeId：{}",userId,tradeId);
+        tradeService.cancelTrade(tradeId, userId);
+
+        return Result.success();
+    }
 }

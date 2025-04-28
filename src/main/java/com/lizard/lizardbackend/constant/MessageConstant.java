@@ -35,4 +35,7 @@ public interface MessageConstant {
     String TRADE_EXISTS = "交易记录已存在";
     String TRADE_OWNER_MISMATCH_ERROR = "交易记录所属用户与当前用户不匹配";
     String TRADE_IN_PROGRESS = "交易进行中，无法删除记录";
+    String TRADE_OVERED = "交易已结束，无法取消交易";
+    String TRADE_PAYER_MISMATCH_ERROR = "用户非交易双方，无权取消";
+
 }

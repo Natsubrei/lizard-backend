@@ -17,4 +17,11 @@ public interface TradeService {
      * @param tradeId 交易记录id
      */
     void deleteTrade(Long userId, Long tradeId);
+
+    /**
+     * 取消交易
+     * @param userId 用户id
+     * @param tradeId 交易记录id
+     */
+    void cancelTrade(Long userId, Long tradeId);
 }
