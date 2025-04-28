@@ -77,7 +77,9 @@ public class TradeServiceImpl implements TradeService {
                 .postId(postId)
                 .build();
 
-        return tradeMapper.insert(newTrade);
+        tradeMapper.insert(newTrade);
+
+        return newTrade.getId();
     }
 
     @Override
