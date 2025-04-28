@@ -130,4 +130,18 @@ public class PostController {
         PageResult pageResult = postService.pageQueryByTime(pageNum, pageSize);
         return Result.success(pageResult);
     }
+
+    /**
+     * 根据关键词查询提欸子
+     * @param word 关键词
+     * @param pageNum 分页查询页号
+     * @param pageSize 分页查询每页大小
+     * @return 分页查询结果
+     */
+    @GetMapping("search")
+    public Result<PageResult> listBySearch(String word, Integer pageNum, Integer pageSize) {
+        log.info("根据关键词搜索帖子：{}, {}, {}", word, pageNum, pageSize);
+        PageResult pageResult = postService.pageQueryByWord(word, pageNum, pageSize);
+        return Result.success(pageResult);
+    }
 }

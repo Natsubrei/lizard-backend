@@ -63,4 +63,13 @@ public interface PostService {
      * @return 分页查询结果
      */
     PageResult pageQueryByTime(Integer pageNum, Integer pageSize);
+
+    /**
+     * 根据关键词查询帖子
+     * @param word 关键词
+     * @param pageNum 分页查询页号
+     * @param pageSize 分页查询每页大小
+     * @return 分页查询结果
+     */
+    PageResult pageQueryByWord(String word, Integer pageNum, Integer pageSize);
 }
