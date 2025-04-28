@@ -22,4 +22,5 @@ public interface TradeConstant {
     /**
      * 交易状态 - 交易失败
      */
-    int STATUS_FAILURE = 3;}
+    int STATUS_FAILURE = 3;
+}

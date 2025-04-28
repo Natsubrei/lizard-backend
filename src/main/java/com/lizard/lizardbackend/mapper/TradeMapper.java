@@ -14,6 +14,5 @@ public interface TradeMapper {
             "WHERE payer_id = #{payerId} AND payee_id = #{payeeId} AND post_id = #{postId} AND payer_deleted = 0")
     Trade getByThreeId(Long payerId, Long payeeId, Long postId);
 
-
     void update(Trade trade);
 }

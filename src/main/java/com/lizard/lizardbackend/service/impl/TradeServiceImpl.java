@@ -123,17 +123,11 @@ public class TradeServiceImpl implements TradeService {
     }
 
     @Override
-    public void cancelTrade(Long userId, Long tradeId){
+    public void cancelTrade(Long tradeId, Long userId){
         // 检查交易记录是否存在
         Trade trade = tradeMapper.getById(tradeId);
         if (trade == null) {
             throw new TradeCancelException(MessageConstant.TRADE_NOT_EXISTS);
-        }
-
-        // 检查交易是否结束（完成或失败）
-        Integer status = trade.getStatus();
-        if (status == TradeConstant.STATUS_SUCCESS || status == TradeConstant.STATUS_FAILURE) {
-            throw new TradeCancelException(MessageConstant.TRADE_OVERED);
         }
 
         // 检查用户是否为交易双方
@@ -141,6 +135,12 @@ public class TradeServiceImpl implements TradeService {
         Long payeeId = trade.getPayeeId();
         if(!Objects.equals(userId, payerId) && !Objects.equals(userId, payeeId)){
             throw new TradeCancelException(MessageConstant.TRADE_PAYER_MISMATCH_ERROR);
+        }
+
+        // 检查交易是否结束（完成或失败）
+        Integer status = trade.getStatus();
+        if (status == TradeConstant.STATUS_SUCCESS || status == TradeConstant.STATUS_FAILURE) {
+            throw new TradeCancelException(MessageConstant.TRADE_OVERED);
         }
 
         Trade tradeUpdate = Trade.builder()
