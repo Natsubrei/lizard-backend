@@ -57,6 +57,12 @@ public class PostServiceImpl implements PostService {
             throw new PostCreateException(MessageConstant.CONTENT_LENGTH_EXCEED_ERROR);
         }
 
+        // 检查交易类型是否合法
+        if (!Objects.equals(type, STATUS_BUY) && !Objects.equals(type, STATUS_SELL) && !Objects.equals(type, STATUS_RENT)
+                && !Objects.equals(type, STATUS_LEND)) {
+            throw new PostCreateException(MessageConstant.TYPE_ERROR);
+        }
+
         // 通过用户id获取用户名
         User user = userMapper.getById(userId);
         String username = user.getUsername();
@@ -189,12 +195,6 @@ public class PostServiceImpl implements PostService {
         // 查询失败则抛出异常
         if (page == null) {
             throw new PostQueryException(MessageConstant.PAGE_QUERY_ERROR);
-        }
-
-        // 交易类型错误抛出异常
-        if (!Objects.equals(type, STATUS_BUY) && !Objects.equals(type, STATUS_SELL) && !Objects.equals(type, STATUS_RENT)
-                && !Objects.equals(type, STATUS_LEND)) {
-            throw new PostQueryException(MessageConstant.TYPE_ERROR);
         }
 
         //返回帖子总数以及此次查询结果
