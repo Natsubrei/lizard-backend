@@ -200,4 +200,19 @@ public class PostServiceImpl implements PostService {
         //返回帖子总数以及此次查询结果
         return new PageResult(page.getTotal(), page);
     }
+
+    @Override
+    public PageResult pageQueryByTime(Integer pageNum, Integer pageSize) {
+        // 使用PageHelper进行分页查询
+        PageHelper.startPage(pageNum, pageSize);
+        Page<PostQueryVO> page = postMapper.pageQueryByTime();
+
+        //查询失败抛出异常
+        if(page == null) {
+            throw new PostQueryException(MessageConstant.PAGE_QUERY_ERROR);
+        }
+
+        //返回帖子总数以及此次查询结果
+        return new PageResult(page.getTotal(), page);
+    }
 }

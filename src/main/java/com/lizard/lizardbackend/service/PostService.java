@@ -55,4 +55,12 @@ public interface PostService {
      * @return 分页查询结果
      */
     PageResult pageQueryByType(Integer type, Integer pageNum, Integer pageSize);
+
+    /**
+     * 根据时间查询帖子
+     * @param pageNum 分页查询页号
+     * @param pageSize 分页查询每页大小
+     * @return 分页查询结果
+     */
+    PageResult pageQueryByTime(Integer pageNum, Integer pageSize);
 }

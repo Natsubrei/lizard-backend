@@ -117,4 +117,17 @@ public class PostController {
         PageResult pageResult = postService.pageQueryByType(type, pageNum, pageSize);
         return Result.success(pageResult);
     }
+
+    /**
+     * 根据时间顺序查询帖子
+     * @param pageNum 分页查询页号
+     * @param pageSize 分页查询每页大小
+     * @return 分页查询结果
+     */
+    @GetMapping("time")
+    public Result<PageResult> listByTime(Integer pageNum, Integer pageSize) {
+        log.info("根据时间顺序查询帖子：{}， {}", pageNum, pageSize);
+        PageResult pageResult = postService.pageQueryByTime(pageNum, pageSize);
+        return Result.success(pageResult);
+    }
 }
