@@ -128,6 +128,13 @@ public class TradeServiceImpl implements TradeService {
             throw new TradeCancelException(MessageConstant.TRADE_NOT_EXISTS);
         }
 
+        // 检查交易记录是否已被双方中删除
+        Integer payerDeleted = trade.getPayerDeleted();
+        Integer payeeDeleted = trade.getPayeeDeleted();
+        if (payeeDeleted == 1 || payerDeleted == 1) {
+            throw new TradeCancelException(MessageConstant.TRADE_DELETED_OVER);
+        }
+
         // 检查用户是否为交易双方
         Long payerId = trade.getPayerId();
         Long payeeId = trade.getPayeeId();
@@ -155,6 +162,13 @@ public class TradeServiceImpl implements TradeService {
         Trade trade = tradeMapper.getById(tradeId);
         if (trade == null) {
             throw new TradeEstablishException(MessageConstant.TRADE_NOT_EXISTS);
+        }
+
+        // 检查交易记录是否已被双方中删除
+        Integer payerDeleted = trade.getPayerDeleted();
+        Integer payeeDeleted = trade.getPayeeDeleted();
+        if (payeeDeleted == 1 || payerDeleted == 1) {
+            throw new TradeEstablishException(MessageConstant.TRADE_DELETED_OVER);
         }
 
         // 检查用户是否为收款方
@@ -188,6 +202,13 @@ public class TradeServiceImpl implements TradeService {
         Trade trade = tradeMapper.getById(tradeId);
         if (trade == null) {
             throw new TradeSuccessException(MessageConstant.TRADE_NOT_EXISTS);
+        }
+
+        // 检查交易记录是否已被双方中删除
+        Integer payerDeleted = trade.getPayerDeleted();
+        Integer payeeDeleted = trade.getPayeeDeleted();
+        if (payeeDeleted == 1 || payerDeleted == 1) {
+            throw new TradeSuccessException(MessageConstant.TRADE_DELETED_OVER);
         }
 
         // 检查用户是否为付款方

@@ -44,4 +44,5 @@ public interface MessageConstant {
     String TRADE_OVERD = "交易已完成，无法再次确定";
     String TRADE_PAYER_MISMATCH_ERROR = "用户非付款方，无权建确定交易";
     String TRADE_NOY_ESTABLISH = "交易未建立，无法确定";
+    String TRADE_DELETED_OVER = "交易已被某方删除，无法操作";
 }
