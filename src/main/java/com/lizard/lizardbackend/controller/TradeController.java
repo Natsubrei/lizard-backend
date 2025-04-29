@@ -51,7 +51,7 @@ public class TradeController {
     public Result<?> deleteTrade(@PathVariable Long tradeId, HttpServletRequest request) {
         Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
 
-        log.info("删除交易记录：userId：{}，tradeId：{}", userId, tradeId);
+        log.info("删除交易记录：{}，{}", userId, tradeId);
         tradeService.deleteTrade(userId, tradeId);
 
         return Result.success();
@@ -66,7 +66,7 @@ public class TradeController {
     public Result<?> cancelTrade(@PathVariable Long tradeId, HttpServletRequest request){
         Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
 
-        log.info("取消交易： userId：{}，tradeId：{}",userId,tradeId);
+        log.info("取消交易： {}，{}",userId,tradeId);
         tradeService.cancelTrade(userId, tradeId);
 
         return Result.success();
@@ -82,7 +82,7 @@ public class TradeController {
     public Result<?> establishTrade(@PathVariable Long tradeId, HttpServletRequest request){
         Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
 
-        log.info("建立交易： userId：{}，tradeId：{}",userId,tradeId);
+        log.info("建立交易： {}，{}",userId,tradeId);
         tradeService.establishTrade(userId, tradeId);
 
         return Result.success();
@@ -98,7 +98,7 @@ public class TradeController {
     public Result<?> successTrade(@PathVariable Long tradeId, HttpServletRequest request){
         Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
 
-        log.info("确定交易： userId：{}，tradeId：{}",userId,tradeId);
+        log.info("确定交易： {}，{}",userId,tradeId);
         tradeService.successTrade(userId, tradeId);
 
         return Result.success();

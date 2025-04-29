@@ -5,13 +5,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 
+/**
+ * 图片添加DTO
+ */
 @Data
 public class ImageAddDTO implements Serializable {
-    /**
-     * 图片id
-     */
-    private Long id;
-
     /**
      * 帖子id
      */

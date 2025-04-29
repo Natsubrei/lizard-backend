@@ -38,10 +38,9 @@ public interface MessageConstant {
     String TRADE_OVERED = "交易已结束，无法取消交易";
     String TRADE_PAY_MISMATCH_ERROR = "用户非交易双方，无权取消";
     String TYPE_ERROR = "交易类型不存在";
-    String TRADE_OVER = "交易已完成，无法再次建立";
+    String TRADE_OVER = "交易已完成，操作终止";
     String TRADE_ESTABLISH = "交易已建立，无法再次建立";
     String TRADE_PAYEE_MISMATCH_ERROR = "用户非收款方，无权建立交易";
-    String TRADE_OVERD = "交易已完成，无法再次确定";
     String TRADE_PAYER_MISMATCH_ERROR = "用户非付款方，无权建确定交易";
     String TRADE_NOY_ESTABLISH = "交易未建立，无法确定";
     String TRADE_DELETED_OVER = "交易已被某方删除，无法操作";

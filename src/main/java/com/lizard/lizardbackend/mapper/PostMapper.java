@@ -26,6 +26,6 @@ public interface PostMapper {
     @Select("SELECT * FROM post WHERE is_deleted = 0 ORDER BY create_time DESC")
     Page<PostQueryVO> pageQueryByTime();
 
-    @Select("SELECT * FROM post WHERE content LIKE CONCAT('%', #{word}, '%')")
+    @Select("SELECT * FROM post WHERE content LIKE CONCAT('%', #{word}, '%') ORDER BY create_time DESC")
     Page<PostQueryVO> pageQueryByWord(String word);
 }

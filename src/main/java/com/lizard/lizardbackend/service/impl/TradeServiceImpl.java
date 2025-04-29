@@ -229,7 +229,7 @@ public class TradeServiceImpl implements TradeService {
 
         // 检查交易是否结束（完成或失败）
         if (status == TradeConstant.STATUS_SUCCESS || status == TradeConstant.STATUS_FAILURE) {
-            throw new TradeSuccessException(MessageConstant.TRADE_OVERD);
+            throw new TradeSuccessException(MessageConstant.TRADE_OVER);
         }
 
         Trade tradeUpdate = Trade.builder()
