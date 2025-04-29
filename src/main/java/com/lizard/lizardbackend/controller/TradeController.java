@@ -2,6 +2,7 @@ package com.lizard.lizardbackend.controller;
 
 import com.lizard.lizardbackend.constant.UserConstant;
 import com.lizard.lizardbackend.pojo.dto.TradeCreateDTO;
+import com.lizard.lizardbackend.result.PageResult;
 import com.lizard.lizardbackend.result.Result;
 import com.lizard.lizardbackend.service.TradeService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -63,7 +64,7 @@ public class TradeController {
      */
     @PutMapping("/cancel/{tradeId}")
     public Result<?> cancelTrade(@PathVariable Long tradeId, HttpServletRequest request){
-        Long userId =(Long) request.getAttribute(UserConstant.USER_ID);
+        Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
 
         log.info("取消交易： userId：{}，tradeId：{}",userId,tradeId);
         tradeService.cancelTrade(userId, tradeId);
@@ -79,7 +80,7 @@ public class TradeController {
      */
     @PutMapping("/establish/{tradeId}")
     public Result<?> establishTrade(@PathVariable Long tradeId, HttpServletRequest request){
-        Long userId =(Long) request.getAttribute(UserConstant.USER_ID);
+        Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
 
         log.info("建立交易： userId：{}，tradeId：{}",userId,tradeId);
         tradeService.establishTrade(userId, tradeId);
@@ -95,11 +96,27 @@ public class TradeController {
      */
     @PutMapping("/success/{tradeId}")
     public Result<?> successTrade(@PathVariable Long tradeId, HttpServletRequest request){
-        Long userId =(Long) request.getAttribute(UserConstant.USER_ID);
+        Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
 
         log.info("确定交易： userId：{}，tradeId：{}",userId,tradeId);
         tradeService.successTrade(userId, tradeId);
 
         return Result.success();
+    }
+
+    /**
+     * @param pageNum 分页查询页号
+     * @param pageSize 分页查询每页大小
+     * @param request http请求
+     * @return 分页查询结果
+     */
+    @GetMapping("/list")
+    public Result<PageResult> listByUserId(Integer pageNum, Integer pageSize, HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
+
+        log.info("根据用户id查询交易记录：{}, {}, {}", userId, pageNum, pageSize);
+        PageResult pageResult =tradeService.tradePageQueryByUserId(userId, pageNum, pageSize);
+
+        return  Result.success(pageResult);
     }
 }

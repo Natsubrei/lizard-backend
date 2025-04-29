@@ -1,5 +1,7 @@
 package com.lizard.lizardbackend.service;
 
+import com.lizard.lizardbackend.result.PageResult;
+
 public interface TradeService {
     /**
      * 创建交易记录
@@ -34,4 +36,13 @@ public interface TradeService {
      * 付款方确定交易
      */
     void successTrade(Long userId,Long tradeId);
+
+    /**
+     * 根据用户id查询帖子
+     * @param pageNum 分页查询页号
+     * @param pageSize 分页查询每页大小
+     * @return 分页查询结果
+     */
+    PageResult tradePageQueryByUserId(Long userId, Integer pageNum, Integer pageSize);
+
 }

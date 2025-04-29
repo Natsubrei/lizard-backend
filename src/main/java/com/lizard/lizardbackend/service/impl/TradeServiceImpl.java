@@ -1,5 +1,7 @@
 package com.lizard.lizardbackend.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.lizard.lizardbackend.constant.MessageConstant;
 import com.lizard.lizardbackend.constant.TradeConstant;
 import com.lizard.lizardbackend.exception.*;
@@ -9,6 +11,8 @@ import com.lizard.lizardbackend.mapper.UserMapper;
 import com.lizard.lizardbackend.pojo.entity.Post;
 import com.lizard.lizardbackend.pojo.entity.Trade;
 import com.lizard.lizardbackend.pojo.entity.User;
+import com.lizard.lizardbackend.pojo.vo.TradeQueryVO;
+import com.lizard.lizardbackend.result.PageResult;
 import com.lizard.lizardbackend.service.TradeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -234,5 +238,20 @@ public class TradeServiceImpl implements TradeService {
                 .build();
 
         tradeMapper.update(tradeUpdate);
+    }
+
+    @Override
+    public PageResult tradePageQueryByUserId(Long userId, Integer pageNum, Integer pageSize) {
+        // 使用PageHelper进行分页查询
+        PageHelper.startPage(pageNum, pageSize);
+        Page<TradeQueryVO> page = tradeMapper.tradePageQueryByUserId(userId);
+
+        // 查询失败则抛出异常
+        if (page == null) {
+            throw new TradeQueryException(MessageConstant.PAGE_QUERY_ERROR);
+        }
+
+        // 返回帖子总数以及此次查询的结果
+        return new PageResult(page.getTotal(), page);
     }
 }
