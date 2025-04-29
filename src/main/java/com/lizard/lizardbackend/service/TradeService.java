@@ -24,4 +24,14 @@ public interface TradeService {
      * @param tradeId 交易记录id
      */
     void cancelTrade(Long userId, Long tradeId);
+
+    /**
+     * 收款方建立交易
+     */
+    void establishTrade(Long userId, Long tradeId);
+
+    /**
+     * 付款方确定交易
+     */
+    void successTrade(Long userId,Long tradeId);
 }

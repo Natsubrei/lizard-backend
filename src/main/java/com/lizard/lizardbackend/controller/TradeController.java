@@ -66,7 +66,39 @@ public class TradeController {
         Long userId =(Long) request.getAttribute(UserConstant.USER_ID);
 
         log.info("取消交易： userId：{}，tradeId：{}",userId,tradeId);
-        tradeService.cancelTrade(tradeId, userId);
+        tradeService.cancelTrade(userId, tradeId);
+
+        return Result.success();
+    }
+
+    /**
+     * 收款方建立交易
+     * @param tradeId  交易id
+     * @param request http请求
+     * @return 交易记录id
+     */
+    @PutMapping("/establish/{tradeId}")
+    public Result<?> establishTrade(@PathVariable Long tradeId, HttpServletRequest request){
+        Long userId =(Long) request.getAttribute(UserConstant.USER_ID);
+
+        log.info("建立交易： userId：{}，tradeId：{}",userId,tradeId);
+        tradeService.establishTrade(userId, tradeId);
+
+        return Result.success();
+    }
+
+    /**
+     * 收款方建立交易
+     * @param tradeId  交易id
+     * @param request http请求
+     * @return 交易记录id
+     */
+    @PutMapping("/success/{tradeId}")
+    public Result<?> successTrade(@PathVariable Long tradeId, HttpServletRequest request){
+        Long userId =(Long) request.getAttribute(UserConstant.USER_ID);
+
+        log.info("确定交易： userId：{}，tradeId：{}",userId,tradeId);
+        tradeService.successTrade(userId, tradeId);
 
         return Result.success();
     }

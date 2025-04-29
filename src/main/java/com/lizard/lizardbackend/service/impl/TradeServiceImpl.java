@@ -2,9 +2,7 @@ package com.lizard.lizardbackend.service.impl;
 
 import com.lizard.lizardbackend.constant.MessageConstant;
 import com.lizard.lizardbackend.constant.TradeConstant;
-import com.lizard.lizardbackend.exception.TradeCancelException;
-import com.lizard.lizardbackend.exception.TradeCreateException;
-import com.lizard.lizardbackend.exception.TradeDeleteException;
+import com.lizard.lizardbackend.exception.*;
 import com.lizard.lizardbackend.mapper.PostMapper;
 import com.lizard.lizardbackend.mapper.TradeMapper;
 import com.lizard.lizardbackend.mapper.UserMapper;
@@ -123,7 +121,7 @@ public class TradeServiceImpl implements TradeService {
     }
 
     @Override
-    public void cancelTrade(Long tradeId, Long userId){
+    public void cancelTrade(Long userId, Long tradeId){
         // 检查交易记录是否存在
         Trade trade = tradeMapper.getById(tradeId);
         if (trade == null) {
@@ -134,7 +132,7 @@ public class TradeServiceImpl implements TradeService {
         Long payerId = trade.getPayerId();
         Long payeeId = trade.getPayeeId();
         if(!Objects.equals(userId, payerId) && !Objects.equals(userId, payeeId)){
-            throw new TradeCancelException(MessageConstant.TRADE_PAYER_MISMATCH_ERROR);
+            throw new TradeCancelException(MessageConstant.TRADE_PAY_MISMATCH_ERROR);
         }
 
         // 检查交易是否结束（完成或失败）
@@ -146,6 +144,72 @@ public class TradeServiceImpl implements TradeService {
         Trade tradeUpdate = Trade.builder()
                 .id(tradeId)
                 .status(TradeConstant.STATUS_FAILURE)
+                .build();
+
+        tradeMapper.update(tradeUpdate);
+    }
+
+    @Override
+    public void establishTrade(Long userId, Long tradeId) {
+        // 检查交易记录是否存在
+        Trade trade = tradeMapper.getById(tradeId);
+        if (trade == null) {
+            throw new TradeEstablishException(MessageConstant.TRADE_NOT_EXISTS);
+        }
+
+        // 检查用户是否为收款方
+        Long payeeId = trade.getPayeeId();
+        if(!Objects.equals(userId, payeeId)) {
+            throw new TradeEstablishException(MessageConstant.TRADE_PAYEE_MISMATCH_ERROR);
+        }
+
+        // 检查交易是否已建立
+        Integer status = trade.getStatus();
+        if (status == TradeConstant.STATUS_ESTABLISHED) {
+            throw new TradeEstablishException(MessageConstant.TRADE_ESTABLISH);
+        }
+
+        // 检查交易是否结束（完成或失败）
+        if (status == TradeConstant.STATUS_SUCCESS || status == TradeConstant.STATUS_FAILURE) {
+            throw new TradeEstablishException(MessageConstant.TRADE_OVER);
+        }
+
+        Trade tradeUpdate = Trade.builder()
+                .id(tradeId)
+                .status(TradeConstant.STATUS_ESTABLISHED)
+                .build();
+
+        tradeMapper.update(tradeUpdate);
+    }
+
+    @Override
+    public void successTrade(Long userId, Long tradeId) {
+        // 检查交易记录是否存在
+        Trade trade = tradeMapper.getById(tradeId);
+        if (trade == null) {
+            throw new TradeSuccessException(MessageConstant.TRADE_NOT_EXISTS);
+        }
+
+        // 检查用户是否为付款方
+        Long payerId = trade.getPayerId();
+        if(!Objects.equals(userId, payerId)) {
+            throw new TradeSuccessException(MessageConstant.TRADE_PAYER_MISMATCH_ERROR);
+        }
+
+        // 检查交易是否已建立
+        Integer status = trade.getStatus();
+        if (status == TradeConstant.STATUS_IN_PROGRESS) {
+            throw new TradeSuccessException(MessageConstant.TRADE_NOY_ESTABLISH);
+        }
+
+        // 检查交易是否结束（完成或失败）
+        if (status == TradeConstant.STATUS_SUCCESS || status == TradeConstant.STATUS_FAILURE) {
+            throw new TradeSuccessException(MessageConstant.TRADE_OVERD);
+        }
+
+        Trade tradeUpdate = Trade.builder()
+                .id(tradeId)
+                .status(TradeConstant.STATUS_SUCCESS)
                 .build();
 
         tradeMapper.update(tradeUpdate);
