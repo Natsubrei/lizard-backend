@@ -140,4 +140,21 @@ public class UserController {
 
         return Result.success();
     }
+
+    /**
+     * 根据用户id查询用户信息
+     * @param userId 用户id
+     * @return 脱敏后的用户信息
+     */
+    @GetMapping("/{userId}")
+    public Result<UserVO> getById(@PathVariable Long userId) {
+        User user = userService.getById(userId);
+        log.info("查询用户：{}", user.getUsername());
+
+        // 用户信息脱敏
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(user, userVO);
+
+        return Result.success(userVO);
+    }
 }
