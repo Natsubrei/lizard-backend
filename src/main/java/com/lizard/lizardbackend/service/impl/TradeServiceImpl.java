@@ -15,6 +15,7 @@ import com.lizard.lizardbackend.pojo.vo.TradeQueryVO;
 import com.lizard.lizardbackend.result.PageResult;
 import com.lizard.lizardbackend.service.TradeService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -253,5 +254,23 @@ public class TradeServiceImpl implements TradeService {
 
         // 返回帖子总数以及此次查询的结果
         return new PageResult(page.getTotal(), page);
+    }
+
+    @Override
+    public TradeQueryVO queryTrade(Long userId, Long payerId, Long payeeId, Long postId) {
+        // 检查用户是否为交易双方
+        if(!Objects.equals(userId, payerId) && !Objects.equals(userId, payeeId)){
+            throw new TradeQueryException(MessageConstant.TRADE_PAY_MISMATCH_ERROR);
+        }
+
+        Trade trade = tradeMapper.getByThreeId(payerId, payeeId, postId);
+        if (trade == null) {
+            return null;
+        }
+
+        TradeQueryVO tradeQueryVO = new TradeQueryVO();
+        BeanUtils.copyProperties(trade, tradeQueryVO);
+
+        return tradeQueryVO;
     }
 }

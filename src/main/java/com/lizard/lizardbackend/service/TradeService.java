@@ -1,5 +1,6 @@
 package com.lizard.lizardbackend.service;
 
+import com.lizard.lizardbackend.pojo.vo.TradeQueryVO;
 import com.lizard.lizardbackend.result.PageResult;
 
 public interface TradeService {
@@ -45,4 +46,13 @@ public interface TradeService {
      */
     PageResult tradePageQueryByUserId(Long userId, Integer pageNum, Integer pageSize);
 
+    /**
+     * 根据双方id以及帖子id查询交易记录
+     * @param userId 用户id
+     * @param payerId 付款方id
+     * @param payeeId 收款方id
+     * @param postId 帖子id
+     * @return 交易记录
+     */
+    TradeQueryVO queryTrade(Long userId, Long payerId, Long payeeId, Long postId);
 }

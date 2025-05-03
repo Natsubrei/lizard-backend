@@ -2,6 +2,7 @@ package com.lizard.lizardbackend.controller;
 
 import com.lizard.lizardbackend.constant.UserConstant;
 import com.lizard.lizardbackend.pojo.dto.TradeCreateDTO;
+import com.lizard.lizardbackend.pojo.vo.TradeQueryVO;
 import com.lizard.lizardbackend.result.PageResult;
 import com.lizard.lizardbackend.result.Result;
 import com.lizard.lizardbackend.service.TradeService;
@@ -118,5 +119,23 @@ public class TradeController {
         PageResult pageResult =tradeService.tradePageQueryByUserId(userId, pageNum, pageSize);
 
         return  Result.success(pageResult);
+    }
+
+    /**
+     * 根据双方id以及帖子id查询交易记录
+     * @param payerId 付款方id
+     * @param payeeId 收款方id
+     * @param postId 帖子id
+     * @param request http请求
+     * @return 交易记录
+     */
+    @GetMapping
+    public Result<TradeQueryVO> queryTrade(Long payerId, Long payeeId, Long postId, HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute(UserConstant.USER_ID);
+
+        log.info("查询交易记录：{}，{}，{}，{}", userId, payerId, payeeId, postId);
+        TradeQueryVO tradeQueryVO = tradeService.queryTrade(userId, payerId, payeeId, postId);
+
+        return Result.success(tradeQueryVO);
     }
 }
