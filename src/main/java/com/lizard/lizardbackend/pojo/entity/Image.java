@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * 帖子图片类
@@ -25,4 +26,14 @@ public class Image implements Serializable {
      * 图片URL
      */
     private String url;
+
+    /**
+     * 是否被删除
+     */
+    private Integer isDeleted;
+
+    /**
+     * 创建时间
+     */
+    private LocalDateTime createTime;
 }

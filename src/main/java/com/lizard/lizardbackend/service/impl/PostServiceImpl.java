@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 import static com.lizard.lizardbackend.constant.PostConstant.*;
@@ -70,31 +71,33 @@ public class PostServiceImpl implements PostService {
         // 截取正文前面一部分作为预览
         String contentBrief = content.substring(0, Math.min(64, content.length()));
 
+        // 上传帖子第一张图片
+        String imageUrl = null;
+        if (!file.isEmpty()) {
+            try {
+                // 文件不为空则尝试上传到OSS
+                imageUrl = AliOssUtil.upload(file.getBytes(), file.getOriginalFilename(), PostConstant.IMAGE_DIRECTORY);
+            } catch (IOException e) {
+                throw new PostCreateException(MessageConstant.FILE_PROCESS_ERROR);
+            }
+        }
+
         Post newPost = Post.builder()
                 .userId(userId)
                 .username(username)
                 .title(title)
                 .content(content)
                 .contentBrief(contentBrief)
+                .imageUrl(imageUrl)
                 .type(type)
                 .price(price)
                 .build();
 
         postMapper.insert(newPost);
 
-        String image = null;
-        if (!file.isEmpty()) {
-            try {
-                // 文件不为空则尝试上传到OSS
-                image = AliOssUtil.upload(file.getBytes(), file.getOriginalFilename(), PostConstant.IMAGE_DIRECTORY);
-            } catch (IOException e) {
-                throw new PostCreateException(MessageConstant.FILE_PROCESS_ERROR);
-            }
-        }
-
         Image newImage = Image.builder()
                 .postId(newPost.getId())
-                .url(image)
+                .url(imageUrl)
                 .build();
 
         imageMapper.insert(newImage);
@@ -121,11 +124,12 @@ public class PostServiceImpl implements PostService {
             throw new PostCreateException(MessageConstant.POST_OWNER_MISMATCH_ERROR);
         }
 
-        String image = null;
+        // 上传帖子图片
+        String url = null;
         if (!file.isEmpty()) {
             try {
                 // 文件不为空则尝试上传到OSS
-                image = AliOssUtil.upload(file.getBytes(), file.getOriginalFilename(), PostConstant.IMAGE_DIRECTORY);
+                url = AliOssUtil.upload(file.getBytes(), file.getOriginalFilename(), PostConstant.IMAGE_DIRECTORY);
             } catch (IOException e) {
                 throw new PostCreateException(MessageConstant.FILE_PROCESS_ERROR);
             }
@@ -133,7 +137,7 @@ public class PostServiceImpl implements PostService {
 
         Image newImage = Image.builder()
                 .postId(postId)
-                .url(image)
+                .url(url)
                 .build();
 
         imageMapper.insert(newImage);
@@ -154,6 +158,8 @@ public class PostServiceImpl implements PostService {
         }
 
         postMapper.delete(postId);
+
+        imageMapper.deleteByPostId(postId);
     }
 
     @Override
@@ -167,6 +173,10 @@ public class PostServiceImpl implements PostService {
 
         PostVO postVO = new PostVO();
         BeanUtils.copyProperties(post, postVO);
+
+        // 获取帖子对应的图片URL
+        List<String> imageUrls = imageMapper.getByPostId(postId);
+        postVO.setImageUrls(imageUrls);
 
         return postVO;
     }

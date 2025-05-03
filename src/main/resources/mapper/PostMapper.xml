@@ -3,7 +3,7 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lizard.lizardbackend.mapper.PostMapper">
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO post (user_id, username, title, content, content_brief, type, price)
-        VALUES (#{userId}, #{username}, #{title}, #{content}, #{contentBrief}, #{type}, #{price})
+        INSERT INTO post (user_id, username, title, content, content_brief, image_url, type, price)
+        VALUES (#{userId}, #{username}, #{title}, #{content}, #{contentBrief}, #{imageUrl}, #{type}, #{price})
     </insert>
 </mapper>

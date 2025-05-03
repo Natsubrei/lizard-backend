@@ -43,6 +43,11 @@ public class Post implements Serializable {
     private String contentBrief;
 
     /**
+     * 帖子第一张图片URL
+     */
+    private String imageUrl;
+
+    /**
      * 交易类型
      */
     private Integer type;

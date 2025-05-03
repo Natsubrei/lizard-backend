@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 帖子详情VO
@@ -34,6 +35,11 @@ public class PostVO implements Serializable {
      * 正文
      */
     private String content;
+
+    /**
+     * 帖子图片URL数组
+     */
+    private List<String> imageUrls;
 
     /**
      * 交易类型

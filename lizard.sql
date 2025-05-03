@@ -29,6 +29,7 @@ create table post
     title         varchar(64)                        not null comment '帖子标题',
     content       text                               not null comment '帖子正文',
     content_brief varchar(127)                       not null comment '正文预览',
+    image_url     varchar(127)                       not null comment '帖子第一张图片URL',
     type          tinyint                            not null comment '交易类型',
     status        tinyint  default 0                 not null comment '商品状态',
     price         int                                null comment '预期价格',
@@ -39,10 +40,12 @@ create table post
 
 create table image
 (
-    id      bigint auto_increment comment '图片id'
+    id          bigint auto_increment comment '图片id'
         primary key,
-    post_id bigint       not null comment '帖子id',
-    url     varchar(127) not null comment '图片URL'
+    post_id     bigint                             not null comment '帖子id',
+    url         varchar(127)                       not null comment '图片URL',
+    is_deleted  tinyint  default 0                 not null comment '是否被删除',
+    create_time datetime default CURRENT_TIMESTAMP not null comment '创建时间'
 )
     comment '帖子图片表';
 
