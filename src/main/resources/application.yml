@@ -13,6 +13,10 @@ spring:
     username: ${spring.datasource.username}
     password: ${spring.datasource.password}
     url: ${spring.datasource.url}
+  servlet:
+    multipart:
+      max-file-size: 4MB
+      max-request-size: 8MB
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml

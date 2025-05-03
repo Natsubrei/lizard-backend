@@ -83,6 +83,9 @@ public class AliOssUtil {
 
         // 获取文件后缀
         int dotIndex = originalName.lastIndexOf('.');
+        if (dotIndex == -1) {
+            throw new UtilRuntimeException(MessageConstant.FILE_NAME_FORMAT_ERROR);
+        }
         String fileExtension = originalName.substring(dotIndex);
 
         // 获取当前时间戳

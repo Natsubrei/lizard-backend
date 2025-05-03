@@ -23,6 +23,7 @@ public interface MessageConstant {
     String LOGIN_EXPIRED = "登录已过期，请重新登录";
     String TOKEN_VERIFICATION_FAILED = "Token验证失败";
     String FILE_UPLOAD_FAILED = "文件上传失败";
+    String FILE_NAME_FORMAT_ERROR = "文件名称格式错误";
     String TITLE_LENGTH_EXCEED_ERROR = "标题长度过长";
     String CONTENT_LENGTH_EXCEED_ERROR = "正文长度过长";
     String POST_OWNER_MISMATCH_ERROR = "帖子所属用户与当前用户不匹配";
