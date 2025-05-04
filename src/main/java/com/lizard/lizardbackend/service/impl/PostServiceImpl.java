@@ -59,8 +59,8 @@ public class PostServiceImpl implements PostService {
         }
 
         // 检查交易类型是否合法
-        if (!Objects.equals(type, STATUS_BUY) && !Objects.equals(type, STATUS_SELL) && !Objects.equals(type, STATUS_RENT)
-                && !Objects.equals(type, STATUS_LEND)) {
+        if (!Objects.equals(type, TYPE_BUY) && !Objects.equals(type, TYPE_SELL)
+                && !Objects.equals(type, TYPE_RENT) && !Objects.equals(type, TYPE_LEND)) {
             throw new PostCreateException(MessageConstant.TYPE_ERROR);
         }
 
@@ -155,6 +155,11 @@ public class PostServiceImpl implements PostService {
         // 检查用户帖子是否属于当前用户
         if (!Objects.equals(post.getUserId(), userId)) {
             throw new PostDeleteException(MessageConstant.POST_OWNER_MISMATCH_ERROR);
+        }
+
+        // 检测物品是否已经被交易
+        if (Objects.equals(post.getStatus(), STATUS_HAS_TRADED)) {
+            throw new PostDeleteException(MessageConstant.ITEM_HAS_BEEN_TRADED);
         }
 
         postMapper.delete(postId);

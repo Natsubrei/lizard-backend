@@ -3,6 +3,7 @@ package com.lizard.lizardbackend.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.lizard.lizardbackend.constant.MessageConstant;
+import com.lizard.lizardbackend.constant.PostConstant;
 import com.lizard.lizardbackend.constant.TradeConstant;
 import com.lizard.lizardbackend.exception.*;
 import com.lizard.lizardbackend.mapper.PostMapper;
@@ -59,7 +60,7 @@ public class TradeServiceImpl implements TradeService {
         }
 
         // 检查帖子是否已经被交易
-        if (post.getStatus() == 1) {
+        if (Objects.equals(post.getStatus(), PostConstant.STATUS_HAS_TRADED)) {
             throw new TradeCreateException(MessageConstant.ITEM_HAS_BEEN_TRADED);
         }
 
@@ -239,6 +240,8 @@ public class TradeServiceImpl implements TradeService {
                 .build();
 
         tradeMapper.update(tradeUpdate);
+
+        postMapper.traded(trade.getPostId());
     }
 
     @Override
