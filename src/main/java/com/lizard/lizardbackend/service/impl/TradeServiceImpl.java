@@ -243,6 +243,7 @@ public class TradeServiceImpl implements TradeService {
                 .build();
 
         tradeMapper.update(tradeUpdate);
+        tradeMapper.traded(trade.getPayeeId(), trade.getPayerId(), trade.getPostId());
 
         postMapper.traded(trade.getPostId());
     }

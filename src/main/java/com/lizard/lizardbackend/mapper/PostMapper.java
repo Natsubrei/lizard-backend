@@ -7,6 +7,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.util.List;
+
 @Mapper
 public interface PostMapper {
     void insert(Post newPost);
@@ -30,6 +32,6 @@ public interface PostMapper {
             "AND content LIKE CONCAT('%', #{word}, '%') ORDER BY create_time DESC")
     Page<PostQueryVO> pageQueryByWord(String word);
 
-    @Update("UPDATE post SET status = 0 WHERE id = #{postId}")
+    @Update("UPDATE post SET status = 1 WHERE id = #{postId}")
     void traded(Long postId);
 }
