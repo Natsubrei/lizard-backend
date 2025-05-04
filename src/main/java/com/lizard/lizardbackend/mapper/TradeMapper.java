@@ -16,7 +16,9 @@ public interface TradeMapper {
             "WHERE payer_id = #{payerId} AND payee_id = #{payeeId} AND post_id = #{postId} AND payer_deleted = 0")
     Trade getByThreeId(Long payerId, Long payeeId, Long postId);
 
-    @Select("SELECT * FROM trade WHERE (payer_id = #{userId} AND payer_deleted = 0 ) OR (payee_id = #{userId} AND payee_deleted = 0 ) ORDER BY create_time DESC")
+    @Select("SELECT * FROM trade " +
+            "WHERE (payer_id = #{userId} AND payer_deleted = 0 ) OR (payee_id = #{userId} AND payee_deleted = 0 ) " +
+            "ORDER BY create_time DESC")
     Page<TradeQueryVO> tradePageQueryByUserId(Long userId);
 
     void update(Trade trade);

@@ -31,6 +31,21 @@ public class TradeQueryVO implements Serializable {
     private Long postId;
 
     /**
+     * 帖子标题
+     */
+    private String title;
+
+    /**
+     * 帖子第一张图片URL
+     */
+    private String imageUrl;
+
+    /**
+     * 交易类型
+     */
+    private Integer type;
+
+    /**
      * 状态
      */
     private Integer status;

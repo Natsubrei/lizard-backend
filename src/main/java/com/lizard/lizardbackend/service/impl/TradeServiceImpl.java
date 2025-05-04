@@ -79,6 +79,9 @@ public class TradeServiceImpl implements TradeService {
                 .payerId(payerId)
                 .payeeId(payeeId)
                 .postId(postId)
+                .title(post.getTitle())
+                .imageUrl(post.getImageUrl())
+                .type(post.getType())
                 .build();
 
         tradeMapper.insert(newTrade);
