@@ -26,8 +26,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
-import static com.lizard.lizardbackend.constant.PostConstant.*;
-
 @Slf4j
 @Service
 public class PostServiceImpl implements PostService {
@@ -45,23 +43,23 @@ public class PostServiceImpl implements PostService {
     public Long createPost(Long userId, String title, String content, Integer type, Integer price, MultipartFile file) {
         // 检查各字段是否为空
         if (StringUtils.isAnyBlank(title, content) || type == null || file == null || file.isEmpty()) {
-            throw new PostCreateException(MessageConstant.ALL_FIELDS_REQUIRED);
+            throw new PostServiceException(MessageConstant.ALL_FIELDS_REQUIRED);
         }
 
         // 检查标题长度是否合法
         if (title.length() > PostConstant.TITLE_MAX_LENGTH) {
-            throw new PostCreateException(MessageConstant.TITLE_LENGTH_EXCEED_ERROR);
+            throw new PostServiceException(MessageConstant.TITLE_LENGTH_EXCEED_ERROR);
         }
 
         // 检查正文长度是否合法
         if (content.length() > PostConstant.CONTENT_MAX_LENGTH) {
-            throw new PostCreateException(MessageConstant.CONTENT_LENGTH_EXCEED_ERROR);
+            throw new PostServiceException(MessageConstant.CONTENT_LENGTH_EXCEED_ERROR);
         }
 
         // 检查交易类型是否合法
-        if (!Objects.equals(type, TYPE_BUY) && !Objects.equals(type, TYPE_SELL)
-                && !Objects.equals(type, TYPE_RENT) && !Objects.equals(type, TYPE_LEND)) {
-            throw new PostCreateException(MessageConstant.TYPE_ERROR);
+        if (!Objects.equals(type, PostConstant.TYPE_BUY) && !Objects.equals(type, PostConstant.TYPE_SELL)
+                && !Objects.equals(type, PostConstant.TYPE_RENT) && !Objects.equals(type, PostConstant.TYPE_LEND)) {
+            throw new PostServiceException(MessageConstant.TYPE_ERROR);
         }
 
         // 通过用户id获取用户名
@@ -78,7 +76,7 @@ public class PostServiceImpl implements PostService {
                 // 文件不为空则尝试上传到OSS
                 imageUrl = AliOssUtil.upload(file.getBytes(), file.getOriginalFilename(), PostConstant.IMAGE_DIRECTORY);
             } catch (IOException e) {
-                throw new PostCreateException(MessageConstant.FILE_PROCESS_ERROR);
+                throw new PostServiceException(MessageConstant.FILE_PROCESS_ERROR);
             }
         }
 
@@ -109,19 +107,19 @@ public class PostServiceImpl implements PostService {
     public void addImageToPost(Long postId, Long userId, MultipartFile file) {
         // 检查文件是否为空
         if (file == null || file.isEmpty() ){
-           throw new ImageAddException(MessageConstant.ALL_FIELDS_REQUIRED) ;
+           throw new PostServiceException(MessageConstant.ALL_FIELDS_REQUIRED) ;
         }
 
         Post post = postMapper.getByPostId(postId);
 
         // 检查帖子是否存在
         if (post == null || post.getIsDeleted() == 1) {
-            throw new PostCreateException(MessageConstant.POST_NOT_EXISTS);
+            throw new PostServiceException(MessageConstant.POST_NOT_EXISTS);
         }
 
         // 检查用户帖子是否属于当前用户
         if (!Objects.equals(post.getUserId(), userId)) {
-            throw new PostCreateException(MessageConstant.POST_OWNER_MISMATCH_ERROR);
+            throw new PostServiceException(MessageConstant.POST_OWNER_MISMATCH_ERROR);
         }
 
         // 上传帖子图片
@@ -131,7 +129,7 @@ public class PostServiceImpl implements PostService {
                 // 文件不为空则尝试上传到OSS
                 url = AliOssUtil.upload(file.getBytes(), file.getOriginalFilename(), PostConstant.IMAGE_DIRECTORY);
             } catch (IOException e) {
-                throw new PostCreateException(MessageConstant.FILE_PROCESS_ERROR);
+                throw new PostServiceException(MessageConstant.FILE_PROCESS_ERROR);
             }
         }
 
@@ -149,17 +147,17 @@ public class PostServiceImpl implements PostService {
 
         // 检查帖子是否存在
         if (post == null || post.getIsDeleted() == 1) {
-            throw new PostDeleteException(MessageConstant.POST_NOT_EXISTS);
+            throw new PostServiceException(MessageConstant.POST_NOT_EXISTS);
         }
 
         // 检查用户帖子是否属于当前用户
         if (!Objects.equals(post.getUserId(), userId)) {
-            throw new PostDeleteException(MessageConstant.POST_OWNER_MISMATCH_ERROR);
+            throw new PostServiceException(MessageConstant.POST_OWNER_MISMATCH_ERROR);
         }
 
         // 检测物品是否已经被交易
-        if (Objects.equals(post.getStatus(), STATUS_HAS_TRADED)) {
-            throw new PostDeleteException(MessageConstant.ITEM_HAS_BEEN_TRADED);
+        if (Objects.equals(post.getStatus(), PostConstant.STATUS_HAS_TRADED)) {
+            throw new PostServiceException(MessageConstant.ITEM_HAS_BEEN_TRADED);
         }
 
         postMapper.delete(postId);
@@ -173,7 +171,7 @@ public class PostServiceImpl implements PostService {
 
         // 检查帖子是否存在
         if (post == null) {
-            throw new PostQueryException(MessageConstant.POST_NOT_EXISTS);
+            throw new PostServiceException(MessageConstant.POST_NOT_EXISTS);
         }
 
         PostVO postVO = new PostVO();
@@ -190,11 +188,16 @@ public class PostServiceImpl implements PostService {
     public PageResult pageQueryByUserId(Long userId, Integer pageNum, Integer pageSize) {
         // 使用PageHelper进行分页查询
         PageHelper.startPage(pageNum, pageSize);
-        Page<PostQueryVO> page = postMapper.pageQueryByUserId(userId);
+
+        Post post = Post.builder()
+                .userId(userId)
+                .isDeleted(0)
+                .build();
+        Page<PostQueryVO> page = postMapper.pageQuery(post);
 
         // 查询失败则抛出异常
         if (page == null) {
-            throw new PostQueryException(MessageConstant.PAGE_QUERY_ERROR);
+            throw new PostServiceException(MessageConstant.PAGE_QUERY_ERROR);
         }
 
         // 返回帖子总数以及此次查询的结果
@@ -205,11 +208,17 @@ public class PostServiceImpl implements PostService {
     public PageResult pageQueryByType(Integer type, Integer pageNum, Integer pageSize) {
         // 使用PageHelper进行分页查询
         PageHelper.startPage(pageNum, pageSize);
-        Page<PostQueryVO> page = postMapper.pageQueryByType(type);
+
+        Post post = Post.builder()
+                .type(type)
+                .status(PostConstant.STATUS_NOT_TRADED)
+                .isDeleted(0)
+                .build();
+        Page<PostQueryVO> page = postMapper.pageQuery(post);
 
         // 查询失败则抛出异常
         if (page == null) {
-            throw new PostQueryException(MessageConstant.PAGE_QUERY_ERROR);
+            throw new PostServiceException(MessageConstant.PAGE_QUERY_ERROR);
         }
 
         // 返回帖子总数以及此次查询结果
@@ -220,11 +229,16 @@ public class PostServiceImpl implements PostService {
     public PageResult pageQueryByTime(Integer pageNum, Integer pageSize) {
         // 使用PageHelper进行分页查询
         PageHelper.startPage(pageNum, pageSize);
-        Page<PostQueryVO> page = postMapper.pageQueryByTime();
+
+        Post post = Post.builder()
+                .status(PostConstant.STATUS_NOT_TRADED)
+                .isDeleted(0)
+                .build();
+        Page<PostQueryVO> page = postMapper.pageQuery(post);
 
         // 查询失败抛出异常
         if(page == null) {
-            throw new PostQueryException(MessageConstant.PAGE_QUERY_ERROR);
+            throw new PostServiceException(MessageConstant.PAGE_QUERY_ERROR);
         }
 
         // 返回帖子总数以及此次查询结果
@@ -239,7 +253,7 @@ public class PostServiceImpl implements PostService {
 
         // 查询失败抛出异常
         if(page == null) {
-            throw new PostQueryException(MessageConstant.PAGE_QUERY_ERROR);
+            throw new PostServiceException(MessageConstant.PAGE_QUERY_ERROR);
         }
 
         // 返回帖子总数以及此次查询结果

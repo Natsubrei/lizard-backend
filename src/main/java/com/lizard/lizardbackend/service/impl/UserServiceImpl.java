@@ -2,9 +2,7 @@ package com.lizard.lizardbackend.service.impl;
 
 import com.lizard.lizardbackend.constant.MessageConstant;
 import com.lizard.lizardbackend.constant.UserConstant;
-import com.lizard.lizardbackend.exception.LoginFailException;
-import com.lizard.lizardbackend.exception.RegisterFailException;
-import com.lizard.lizardbackend.exception.UpdateFailException;
+import com.lizard.lizardbackend.exception.UserServiceException;
 import com.lizard.lizardbackend.mapper.UserMapper;
 import com.lizard.lizardbackend.pojo.entity.User;
 import com.lizard.lizardbackend.service.UserService;
@@ -32,28 +30,28 @@ public class UserServiceImpl implements UserService {
     public Long register(String username, String password, String confirmPassword) {
         // 检查各字段是否为空
         if (StringUtils.isAnyBlank(username, password, confirmPassword)) {
-            throw new RegisterFailException(MessageConstant.USER_OR_PASSWORD_IS_NULL);
+            throw new UserServiceException(MessageConstant.USER_OR_PASSWORD_IS_NULL);
         }
 
         // 检查两次输入密码是否一致
         if (!confirmPassword.equals(password)) {
-            throw new RegisterFailException(MessageConstant.PASSWORDS_NOT_CONSISTENT);
+            throw new UserServiceException(MessageConstant.PASSWORDS_NOT_CONSISTENT);
         }
 
         // 检查用户名格式是否正确
         if (!username.matches(UserConstant.USERNAME_PATTERN)) {
-            throw new RegisterFailException(MessageConstant.USERNAME_FORMAT_ERROR);
+            throw new UserServiceException(MessageConstant.USERNAME_FORMAT_ERROR);
         }
 
         // 检查密码格式是否正确
         if (!password.matches(UserConstant.PASSWORD_PATTERN)) {
-            throw new RegisterFailException(MessageConstant.PASSWORD_FORMAT_ERROR);
+            throw new UserServiceException(MessageConstant.PASSWORD_FORMAT_ERROR);
         }
 
         // 检查用户是否存在
         User user = userMapper.getByUsername(username);
         if (user != null) {
-            throw new RegisterFailException(MessageConstant.USERNAME_EXISTS);
+            throw new UserServiceException(MessageConstant.USERNAME_EXISTS);
         }
 
         // 对密码进行加密，用户名作为Salt，防止密码重复导致加密密码一致
@@ -80,29 +78,29 @@ public class UserServiceImpl implements UserService {
     public Long login(String username, String password) {
         // 检查各字段是否为空
         if (StringUtils.isAnyBlank(username, password)) {
-            throw new LoginFailException(MessageConstant.USER_OR_PASSWORD_IS_NULL);
+            throw new UserServiceException(MessageConstant.USER_OR_PASSWORD_IS_NULL);
         }
 
         // 检查用户名格式是否正确
         if (!username.matches(UserConstant.USERNAME_PATTERN)) {
-            throw new LoginFailException(MessageConstant.USERNAME_FORMAT_ERROR);
+            throw new UserServiceException(MessageConstant.USERNAME_FORMAT_ERROR);
         }
 
         // 检查密码格式是否正确
         if (!password.matches(UserConstant.PASSWORD_PATTERN)) {
-            throw new LoginFailException(MessageConstant.PASSWORD_FORMAT_ERROR);
+            throw new UserServiceException(MessageConstant.PASSWORD_FORMAT_ERROR);
         }
 
         // 检查用户是否存在
         User user = userMapper.getByUsername(username);
         if (user == null || user.getIsDeleted() == 1) {
-            throw new LoginFailException(MessageConstant.USERNAME_OR_PASSWORD_ERROR);
+            throw new UserServiceException(MessageConstant.USERNAME_OR_PASSWORD_ERROR);
         }
 
         // 检查密码是否正确
         String encryptPwd = DigestUtils.md5DigestAsHex((password + username).getBytes(StandardCharsets.UTF_8));
         if (!encryptPwd.equals(user.getPassword())) {
-            throw new LoginFailException(MessageConstant.USERNAME_OR_PASSWORD_ERROR);
+            throw new UserServiceException(MessageConstant.USERNAME_OR_PASSWORD_ERROR);
         }
 
         return user.getId();
@@ -124,12 +122,12 @@ public class UserServiceImpl implements UserService {
 
         // 检查昵称格式
         if (StringUtils.isNotBlank(nickname) && !nickname.matches(UserConstant.NICKNAME_PATTERN)) {
-            throw new UpdateFailException(MessageConstant.NICKNAME_FORMAT_ERROR);
+            throw new UserServiceException(MessageConstant.NICKNAME_FORMAT_ERROR);
         }
 
         // 检查手机号格式
         if (StringUtils.isNotBlank(phone) && !phone.matches(UserConstant.PHONE_PATTERN)) {
-            throw new UpdateFailException(MessageConstant.PHONE_FORMAT_ERROR);
+            throw new UserServiceException(MessageConstant.PHONE_FORMAT_ERROR);
         }
 
         String avatar = null;
@@ -138,7 +136,7 @@ public class UserServiceImpl implements UserService {
                 // 文件不为空则尝试上传到OSS
                 avatar = AliOssUtil.upload(file.getBytes(), file.getOriginalFilename(), UserConstant.AVATAR_DIRECTORY);
             } catch (IOException e) {
-                throw new UpdateFailException(MessageConstant.FILE_PROCESS_ERROR);
+                throw new UserServiceException(MessageConstant.FILE_PROCESS_ERROR);
             }
         }
 
@@ -156,27 +154,27 @@ public class UserServiceImpl implements UserService {
     public void updatePassword(Long userId, String oldPassword, String newPassword, String confirmNewPassword) {
         // 检查各字段是否为空
         if (StringUtils.isAnyBlank(oldPassword, newPassword, confirmNewPassword)) {
-            throw new UpdateFailException(MessageConstant.ALL_FIELDS_REQUIRED);
+            throw new UserServiceException(MessageConstant.ALL_FIELDS_REQUIRED);
         }
 
         // 检查新密码与旧密码是否一致
         if (newPassword.equals(oldPassword)) {
-            throw new UpdateFailException(MessageConstant.PASSWORD_DUPLICATION_NOT_ALLOWED);
+            throw new UserServiceException(MessageConstant.PASSWORD_DUPLICATION_NOT_ALLOWED);
         }
 
         // 检查两次输入的新密码是否一致
         if (!confirmNewPassword.equals(newPassword)) {
-            throw new UpdateFailException(MessageConstant.NEW_PASSWORDS_NOT_CONSISTENT);
+            throw new UserServiceException(MessageConstant.NEW_PASSWORDS_NOT_CONSISTENT);
         }
 
         // 检查旧密码格式是否正确
         if (!oldPassword.matches(UserConstant.PASSWORD_PATTERN)) {
-            throw new UpdateFailException(MessageConstant.OLD_PASSWORD_FORMAT_ERROR);
+            throw new UserServiceException(MessageConstant.OLD_PASSWORD_FORMAT_ERROR);
         }
 
         // 检查新密码格式是否正确
         if (!newPassword.matches(UserConstant.PASSWORD_PATTERN)) {
-            throw new UpdateFailException(MessageConstant.NEW_PASSWORD_FORMAT_ERROR);
+            throw new UserServiceException(MessageConstant.NEW_PASSWORD_FORMAT_ERROR);
         }
 
         // 通过用户id获取用户名
@@ -186,7 +184,7 @@ public class UserServiceImpl implements UserService {
         // 检查旧密码是否正确
         String encryptPwd = DigestUtils.md5DigestAsHex((oldPassword + username).getBytes(StandardCharsets.UTF_8));
         if (!encryptPwd.equals(user.getPassword())) {
-            throw new UpdateFailException(MessageConstant.OLD_PASSWORD_INPUT_ERROR);
+            throw new UserServiceException(MessageConstant.OLD_PASSWORD_INPUT_ERROR);
         }
 
         // 对新密码进行加密
@@ -204,7 +202,7 @@ public class UserServiceImpl implements UserService {
     public void deactivate(Long userId, String password) {
         // 检查密码格式是否正确
         if (!password.matches(UserConstant.PASSWORD_PATTERN)) {
-            throw new UpdateFailException(MessageConstant.PASSWORD_FORMAT_ERROR);
+            throw new UserServiceException(MessageConstant.PASSWORD_FORMAT_ERROR);
         }
 
         // 通过用户id获取用户名
@@ -214,7 +212,7 @@ public class UserServiceImpl implements UserService {
         // 检查密码是否正确
         String encryptPwd = DigestUtils.md5DigestAsHex((password + username).getBytes(StandardCharsets.UTF_8));
         if (!encryptPwd.equals(user.getPassword())) {
-            throw new UpdateFailException(MessageConstant.PASSWORD_INPUT_ERROR);
+            throw new UserServiceException(MessageConstant.PASSWORD_INPUT_ERROR);
         }
 
         // 逻辑删除字段置为1，代表删除

@@ -6,4 +6,29 @@
         INSERT INTO post (user_id, username, title, content, content_brief, image_url, type, price)
         VALUES (#{userId}, #{username}, #{title}, #{content}, #{contentBrief}, #{imageUrl}, #{type}, #{price})
     </insert>
+
+    <select id="pageQuery" parameterType="Post" resultType="PostQueryVO">
+        SELECT * FROM post
+        <where>
+            <if test="id != null">
+                AND id = #{id}
+            </if>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+            <if test="username != null">
+                AND username = #{username}
+            </if>
+            <if test="type != null">
+                AND type = #{type}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="isDeleted != null">
+                AND is_deleted = #{isDeleted}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
 </mapper>

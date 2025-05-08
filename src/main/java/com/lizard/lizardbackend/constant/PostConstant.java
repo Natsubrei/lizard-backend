@@ -17,7 +17,7 @@ public interface PostConstant {
     /**
      * 正文最大长度
      */
-    Integer CONTENT_MAX_LENGTH = 1000;
+    Integer CONTENT_MAX_LENGTH = 10000;
 
     /**
      * 想买入
