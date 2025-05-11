@@ -124,7 +124,7 @@ public class PostController {
      * @param pageSize 分页查询每页大小
      * @return 分页查询结果
      */
-    @GetMapping("time")
+    @GetMapping("/time")
     public Result<PageResult> listByTime(Integer pageNum, Integer pageSize) {
         log.info("根据时间顺序查询帖子：{}， {}", pageNum, pageSize);
         PageResult pageResult = postService.pageQueryByTime(pageNum, pageSize);
@@ -138,7 +138,7 @@ public class PostController {
      * @param pageSize 分页查询每页大小
      * @return 分页查询结果
      */
-    @GetMapping("search")
+    @GetMapping("/search")
     public Result<PageResult> listBySearch(String word, Integer pageNum, Integer pageSize) {
         log.info("根据关键词搜索帖子：{}, {}, {}", word, pageNum, pageSize);
         PageResult pageResult = postService.pageQueryByWord(word, pageNum, pageSize);
