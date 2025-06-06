@@ -38,15 +38,14 @@ public interface TradeMapper {
     Trade getById(Long id);
 
     /**
-     * 根据双方id和帖子id查询未完成且未删除的交易记录
+     * 根据双方id和帖子id查询交易记录
      * @param payerId 付款方id
      * @param payeeId 收款方id
      * @param postId 帖子id
      * @return 交易对象
      */
     @Select("SELECT * FROM trade " +
-            "WHERE payer_id = #{payerId} AND payee_id = #{payeeId} AND post_id = #{postId} " +
-            "AND payer_deleted = 0 AND status != 2 AND status != 3")
+            "WHERE payer_id = #{payerId} AND payee_id = #{payeeId} AND post_id = #{postId}")
     Trade getByThreeId(Long payerId, Long payeeId, Long postId);
 
     /**
